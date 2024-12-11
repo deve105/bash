@@ -1,5 +1,6 @@
 ---
-title: "Bash in vscode"
+title: "Bash in VS Code"
+date: "2024-12-11"
 description: "Bourne-Again SHell"
 author: "Daniel Enriquez-Vera"
 format: 
@@ -9,6 +10,244 @@ execute:
     echo: true
     eval: false
 ---
+
+## 1. Why Linux?
+
+::: {.columns}
+::: {.column width="50%"}
+
+- Most pipelines (awk, bash, piping, perl, etc) are based on linux.
+- All bioinformatic tools have a **Linux** version (faster than R and Python).
+- Computer clusters use Linux.
+- Multiple versions of a program of an open-source OS.
+
+:::
+::: {.column width="50%"}
+
+![](/images/01.jpeg){with="30%"}
+
+:::
+:::
+
+{{< page break >>}}
+
+https://xie186.github.io/Novice2Expert4Bioinformatics/r-introduction.html 
+
+
+
+## Definitions
+
+![bg right height:4in](/images/02cmline.png)
+
+- GUI: Graphical User Interface (classic interface)
+- Shell: Command line interface
+- We will use VirtualBox (because it is convenient for windows)
+
+
+## Linux file system
+
+![center height:2in](/images/03_structure.png)
+
+* Tree file system that starts with a forward slash *(/)*
+    - Absolute path: ```/starts/from/the/root```
+    - Relative path: relative to the working directory (where i am now) ```.```or ```~```or ```..``` or ```-```
+* To know where i am: ```pwd```or ```readlink -f```
+
+
+## Commands
+
+Basic structure:
+
+```command [options] [file or arguments]```
+* *It classically has a STDIN and STDOUT*
+* Basic commands: **ls**, **cd**, **cp**, **mv** and **mkdir -p** 
+* Use always auto-completion ```TAB```
+
+```
+ls [option] [file]
+ls -a
+ls -t
+ls -l -a
+ls -la #it is possible to combine
+```
+
+## Application in bioinformatics 
+
+```
+mkdir -p project/{sequences, results, outputs/{fig, pdf, doc}, scripts}
+```
+* Also **rm**
+
+```
+#it is a hard remove - BE CAREFUL!
+rm -rf folder
+```
+* View or merge huge files **cat**, **zcat**, also: **more**, **less**, **head and **tail**
+``` 
+head -n 5 file.txt 
+head -5 file.txt
+```
+
+## Inputs and outputs
+
+- STDIN: Standard input or 0
+- STDOUT: Standard output or 1 (it can be directed to a file)
+- STDERR: Standard error or 2
+```
+x="Hola amiguitos!"
+echo $x > hello.txt
+```
+
+* file usage
+
+```
+du -sh file
+du -ah file
+```
+## Check integrity of a file
+
+Usually, we download many files from a repository.
+
+```
+md5sum file
+```
+---
+
+## File filtering
+
+**cut**, **sort**, **uniq**, **wc**, **grep**, **paste**
+
+- grep: Global regular expression print (search inside the file for a string or pattern)
+
+```
+grep "Hola" file.txt | wc -l
+grep -w #exact word
+grep -i #a line | cut -f 1-3,5
+paste ---- file |cut -f1-2 | head -2
+
+#convert to fasta
+paste - - - - <data/WGBS_example_data/EV1.fastq |cut -f1-2 | sed 's/^@/>/' | tr "\t" "\n"  |head -4
+
+##from paired to single end https://biowize.wordpress.com/2015/03/26/the-fastest-darn-fastq-decoupling-procedure-i-ever-done-seen/
+paste <(paste - - - - < reads-1.fastq) \
+      <(paste - - - - < reads-2.fastq) | \
+      tr '\t' '\n' > reads-interleave.fastq
+paste - - - - - - - - < reads-int.fastq \
+    | tee >(cut -f 1-4 | tr '\t' '\n' > reads-1.fastq) \
+    | cut -f 5-8 | tr '\t' '\n' > reads-2.fastq
+```
+
+https://gist.github.com/nathanhaigh/3521724
+
+
+## Find
+
+```
+# Find any files with "Linux" and ".Rmd" in the file names
+find . -type f -name "*Linux*.Rmd"
+
+# Count the number of folders
+find . -type f | wc -l
+find . -type f -size +10M
+find . -maxdepth 1 -type f -size +1M
+
+#Do something
+find . -type f -name "*fa*.pl" -exec ls -l {} +; 
+```
+
+## Check jobs running
+
+```
+ps aux
+
+#dynamic realtime view
+top -c
+#to kill a process k + PID
+#kill a process
+kill number
+#disk space
+df -h
+
+```
+
+## CMD II
+
+```
+#cluster
+myquota
+#memory 
+free -h
+#who is logged
+w
+who -a
+whoami
+#uptime
+uptime
+#network
+ifconfig
+#User and passwd
+adduser xxxid
+adduser xxxide -g bioinf
+```
+
+## Compressed files
+
+* Check compressed files
+
+```
+zcat file.gz | less
+```
+* Test it if is valid
+
+```
+gzip -t file.gz
+# Decompress
+gunzip file.gz
+# Decompress and keep the original
+gunzip -c file.gz > file
+```
+---
+
+## Compressed files (II)
+
+* tar files
+
+```
+tar zxvf file.tar.gz
+#z unzip
+#x exctract
+#v verbosely
+#f the following is a filename
+
+tar -tvf # viewing without extraction
+
+#create a tar
+tar zcvf file.tar.gz file1 file2 file3 folder1
+```
+
+
+## Compressed files (III)
+
+* zip files
+
+```
+zip file.zip
+unzip file.zip
+```
+* tar.bz2
+```
+tar -jxvf file.tar.bz2
+#to create
+tar -cvjSf file.tar.bz2 file1 file2 folder1 folder2
+```
+
+## Copy from the server
+
+```
+rsync
+scp
+```
+
 
 ## 1. Virtual Environment
 
@@ -32,7 +271,7 @@ Installation: (only the first time.)
 
 ```{python}
 # Option A
-# a "bashenv" environment has been created (WOS)
+# a ".venv" environment has been created (WOS)
 !python -m venv .venv
 
 # Option B
