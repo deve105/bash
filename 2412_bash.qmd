@@ -1,13 +1,26 @@
+---
+title: "Bash in vscode"
+description: "Bourne-Again SHell"
+author: "Daniel Enriquez-Vera"
+format: 
+    html:
+        embed-resources: true
+execute:
+    echo: true
+    eval: false
+---
 
+## 1. Virtual Environment
 
-## Virtual Environment
+**venv** allow us to manage every project independently (Avoiding version conflicts). Basically, two options:
 
-**venv** allow us to manage every project independently (Avoiding version conflicts).
-    * conda
-    * virtualenv
+-   Conda
+-   Virtualenv or venv
 
-### 1. Installation
-This should be run only the first time.
+Installation: (only the first time.)
+
+-   venv: built-in tool
+-   virtualenv: more advanced and efficient features.
 
 ```{python}
 # Tip: Everytime I have to use bash (% or !)
@@ -15,18 +28,924 @@ This should be run only the first time.
 !echo "Virtual environment allow to work every project with independent packages versions"
 ```
 
-### 2. Create a virtual environment
+## 2. Create a virtual environment
 
 ```{python}
+# Option A
 # a "bashenv" environment has been created (WOS)
-!python -m venv bashenv
-#!virtualenv bashenv 
+!python -m venv .venv
+
+# Option B
+!virtualenv .venv 
+
+# Option C
+# Control + Shift + P, venv
+# create environment, select interpreter
+
+## To delete (just remove it after deactivate and select another interpreter)
+rmdir /s /q .venv
 ```
 
-### 3. Activate venv
+## 3. Activate venv
 
 ```{python}
+# Windows
+# Select interpreter
+# in the terminal .venv\Scripts\activate.ps1
 
 ## Mac
-#source env_name/bin/activate
+# source env_name/bin/activate
+
+## deactivate
+## deselect the interpreter
 ```
+
+## 4. Install modules
+
+Now every module will be downloaded and installed separately from the global environment (an specific version can also be specified), avoid using ! or % at this step.
+
+```{python}
+pip install ipykernel pandas jupyter pyyaml
+```
+
+## 5. Anatomy of a command
+
+-   `htlvlab\$ cat -1 xd.txt`
+
+    -   **prompt:** \[**user**\]\$
+
+    -   **command:** cat
+
+    -   **option:** -1
+
+    -   **argument:** xd.txt `in this case: a text file`
+
+    -   **cursor:** \|
+
+Tips:
+
+```         
+* Be careful with spaces.
+* bash, python are spelling and case sensitivity! (Use Tab auto-complete!) 
+* To know more about a command use `man`, `--help`, and `whatis`
+```
+
+```{python}
+!cat """this is my first text,
+If I write a haiku,
+use triple marks""" > xd.txt
+!echo "Hola, I speak spanish"
+!cat -1 xd.txt
+```
+
+## 6. Shell
+(simple) Shell << Python (advanced).
+We gonna use it for genomic data processing.
+
+### Types:
+- Bourne shell (sh) - old stuff
+- Korn shell (ksh) - old stuff x2
+- Bourn again shell (bash) - Linux
+
+## Practice 
+```bash
+# = 1. Which shell are we using?
+echo $0
+# = 2. What shells have we available?
+cat /etc/shells
+# = 3. Where is bash located?
+which bash
+# = 4. Create an empty file
+touch peru.sh
+# = 5. To check my file permissions
+ls -al
+# = 6. System variables (usually uppercase)
+echo $BASH
+echo $BASH_VERSION
+echo $HOME
+echo $PWD
+```
+
+## Tips: Always avoid errors:
+
+- Check that files exist.
+- Any error may cause your script to abort 😰.
+- Variable names should not star with a number.
+- Be careful with strings and spaces!
+
+## Shebang - a header to call bash
+
+* First line - our bash path
+
+```bash
+#!/bin/bash
+```
+### All the flavours of BASH! (Sanity check)
+* `set -e`: terminate the script if any command existed with a nonzero exit status.
+* `set -u`: not to run any command containing a reference to an unset variable
+```bash
+echo "rm $VAR1/NOTSET*.*"`
+```
+* `set -o pipefail`: if the last program terminates with a nonzero status the pipe, it wont stop
+
+## My first script 
+
+* First, create a file.
+
+```bash
+touch myscript.sh
+```
+```bash
+#!/bin/bash
+echo "I am writing this non-sense script for you - DEV" 
+```
+* Then, make it executable and execute it!
+```bash 
+chmod +x myscript.sh #permissions (x) for the owner (u)
+chmod u+x myscript.sh
+```
+```bash
+bash my script.sh
+```
+## Variables
+
+* We use a dollar sign (`$`) to access a variable.
+```bash
+results_dir="results/"
+
+echo $results_dir
+
+# = To be more specific with beginning and end
+echo ${results_dir}
+
+# = Make it more robust with ""
+echo "${results_dir}_abc/"
+```
+## Variables and arguments 
+
+An editor: Yes, we can use any (nano, vim, emacs, etc).
+```bash
+echo '
+#!/bin/bash 
+echo "script name: $0"
+echo "first arg: $1"
+echo "second arg: $2"
+echo "third arg: $3" ' > args.sh
+
+bash args.sh arg1 arg2 arg3
+```
+WHY do I need to learn this $#%@?
+
+... because all bioinformatic tools are written in bash, python, R.
+
+## Practice 
+* `$0` = script name, `$1` = argument 1, `$#` = number of arguments
+```bash
+echo '#!/bin/bash 
+if [ "$#" -lt 3 ] 
+then
+    echo "error: too few arguments, you provided $#, 3 required"
+    echo "usage: script.sh arg1 arg2 arg3"
+    exit 1
+fi
+echo "script name: $0"
+echo "first arg: $1"
+echo "second arg: $2"
+echo "third arg: $3" ' > args.sh
+```
+## Practice 
+
+```bash
+bash args.sh arg1 arg2
+
+#Passing arguments
+echo $1 $2 $3
+
+#script name
+echo $0 
+
+# = another form to pass, here 0 is the first argument
+args=("$@")
+echo ${args[1]} ${args[2]} ${args[3]}  
+
+#the same result
+echo $@
+
+#number of arguments
+echo $# 
+```
+
+## Practice 
+
+```bash
+## using read
+echo "Enter name:"
+read name
+echo "Entered name: $name"
+
+## if multiple variables
+echo "Enter names:"
+read name1 name2 name3
+echo "Names: $name1, $name2, $name3"
+
+## to use the same line
+read -p "username:" user_var
+echo "username: $user_var"
+
+#to use a hidden or silent -sp
+read -p "username:" user_var
+read -sp "password:" pass_var
+echo
+echo "username: $user_var"
+echo "password: $pass_var"
+```
+
+## Practice 
+
+This is how arrays work in bash:
+
+```bash
+#run the inputs in a array read -a
+read -a names
+echo "names: ${names[0]}, ${names[1]}
+
+#if after read is empty
+read
+echo "Name: $REPLY"
+```
+
+## Conditionals 
+
+0 means success,anything else is false or failure.
+No need any overhead to call
+```bash
+if [command] then
+    [if-statement] #if it is true or 0
+    elif
+    then
+    else
+else
+    [else-statement] #optional
+fi
+```
+
+## Practice 
+
+* If pipelines is used with `set -o`, any nonzero exit will skip the statement to the next block.
+
+```bash
+echo `#!/bin/bash
+if grep "pattern" some_file.txt > /dev/null 
+    then
+    # commands to run if "pattern" is found
+    echo "found 'pattern' in 'some_file.txt" 
+fi`
+# We can also negate our program’s exit status with !: 
+if ! grep "pattern" some_file.txt > /dev/null
+    then echo "did not find 'pattern' in 'some_file.txt" 
+fi
+```
+
+## Expressions
+
+* An expression can be: String comparison, Numeric comparison, File operators and Logical operators and it is represented by `[expression]:`
+
+### String Comparisons:  
+
+* `=`  compare if two strings are equal; `if [ "$a" = "$b" ]`
+* `!=`  compare if two strings are not equal; `if [ "$a" != "$b" ]`
+* `-n`  evaluate if string length is > 0
+* `-z`  evaluate if string length is = 0 
+* `==` is equal to `if [ "$a" == "$b" ]`
+
+
+## Expressions for strings
+
+* `<` is less than, in ASCII alphabetical order `if [[ "$a" < "$b" ]]`
+* `>` is greater than, in ASCII alphabetical order `if [[ "$a" > "$b" ]]`
+
+Examples: 
+```bash
+[ s1 = s2 ] # (true if s1 same as s2, else false)
+[ s1 != s2 ] # (true if s1 not same as s2, else false)
+[ s1 ]  # (true if s1 is not empty, else false)
+[ -n s1 ] #   (true if s1 has a length greater then 0, else false)
+[ -z s2 ] #  (true if s2 has a length of 0, otherwise false)
+```
+## Expressions for numbers 
+
+## Number Comparisons: 
+
+* `-eq` compare if two numbers are equal
+* `-ge` compare if one number is >= to a number, `(("$a" >= "$b"))`
+* `-le`  compare if one number is <= to a number, `(("$a" <= "$b"))`
+* `-ne`  compare if two numbers are not equal
+* `-gt`  compare if one number is > another number, `(("$a" > "$b"))`
+* `-lt`  compare if one number is < another number, `(("$a" < "$b"))`
+
+
+## Practice 
+
+```bash
+#Examples: 
+[ n1 -eq n2 ]  #(true if n1 same as n2, else false)
+[ n1 -ge n2 ]  #(true if n1greater then or equal to n2, else false)
+[ n1 -le n2 ]  #(true if n1 less then or equal to n2, else false)
+[ n1 -ne n2 ]  #(true if n1 is not same as n2, else false)
+[ n1 -gt n2 ]  #(true if n1 greater then n2, else false)
+[ n1 -lt n2 ]  #(true if n1 less then n2, else false)
+```
+
+```bash
+echo -e "Enter the name of the file: \c"
+read file_name
+if [-e $file_name] #exists?
+then
+    echo "$file_name found"
+else
+    echo "$file_name not found"
+fi
+```
+
+
+## Practice 
+
+```bash
+echo -e "Enter the name of the file: \c"
+read file_name
+if [ -f $file_name ]
+then
+    if [ -w $file_name]
+    then
+        echo "Type some text data, to quite press control + d"
+    else
+    fi
+else
+    echo "$file_name dont exist"
+fi
+```
+
+## Basic operations in Bash
+
+Operations: + - * / % (remainer after division)
+After expr is necessary \*
+
+```bash
+num1=20
+num2=
+
+echo $((num1+ num2))
+echo $(expr $num1 + $num2)
+echo $(($num1 + $num2))
+
+# working with decimals, (awk)
+echo "1.5+2.3" | bc
+echo "scale=2; 20.5/5" |bc
+echo "scale=2; sqrt($num)" | bc -l #library with more mathematical formulas
+```
+> [More information](https://tldp.org/LDP/abs/html/index.html)
+
+## Basic operations 
+
+* Tips: for floating numbers -> `bc` (basic calculator)
+
+### `test` command
+
+* Exits with either 0 or 1, supports standard comparison operators (independenly)
+
+```bash
+test "ATG" = "ATG" ; echo "$?"
+test "ATG" = "atg" ; echo "$?" 
+test 3 -lt 1; echo "$?"
+test 3 -le 3; echo "$?"
+```
+## Logical operators
+
+* `-d` dir; `-b` a special file; `-c` character file
+* `-s` empty; `-f` file; `-e` file  exists; `-h` link
+* `-r` readable?; `-w` writable?; `-x` executable?
+
+```bash
+test -d some_directory ; echo $? # is this a directory? 
+test -f some_file.txt ; echo $? # is this a file?
+test -r some_file.txt ; echo $? # is this file readable?
+#test+if
+if test -f some_file.txt
+    then [...]
+fi
+if [-f some_file.txt]
+    then [...]
+fi
+```
+
+## Operators
+
+* `-a` AND; `-o` OR; `!` negation; `()` group
+```bash
+age=25
+if [ "$age" -gt 18 ] && [ "$age -lt 30" ]
+then
+    echo "valid age"
+    else
+    echo "age not valid"
+fi
+### Alternatives
+##  [ "$age" -gt 18 -a "$age -lt 30" ]
+##  [[ "$age" -gt 18 && "$age -lt 30" ]]
+```
+
+## Practice 
+
+* Tip: Provide an space after and before
+
+```bash
+#!/bin/bash
+set -e
+set -u
+set -o pipefail
+
+if [ "$#" -ne 1 -o ! -r "$1" ]
+  then echo "usage: script.sh file_in.txt"
+  exit 1 
+fi
+
+```
+## Case patterns
+
+```bash
+LANG=C #setting the language uppercase
+echo -e "Enter some xxxx: \c"
+read value 
+
+case $value in
+    pattern 1)  #[a-z][A-Z][0-9]?(special), *unknown
+        statement ;; #echo "this is the $value"
+    pattern 2)
+        statement ;;
+        *)
+        statement ;;
+    ...
+esac
+
+```
+## Case patterns
+
+```bash
+#!/usr/bin/bash
+echo -e "Enter a character: \c"
+read value
+#environment variable to set the language
+LANG=C
+case $value in
+    [a-z] )
+        echo "lower case" ;;
+    [A-Z] )
+        echo "upper case" ;;
+    [0-9] )
+        echo "digit" ;;
+    ? )
+        echo "special" ;;
+    * )
+        echo "unknown input" ;;
+esac        
+```
+## Arrays
+
+A set of elements
+
+```bash
+#!/usr/bin/bash
+os=("ubuntu", "windows", "kali")
+os[3]="mac" #it will add mac to the array
+unset os[2] #remove the third one
+# gaps in the array are possible
+
+echo "${os[@]}" #all elements printed
+echo "${os[1]}" #to print windows (2)
+echo "${!os[@]}" #prints the elements (0 1 2)
+echo "${#os[@]}" #prints the length of the array
+```
+## Loops
+
+It's better to have a list of files
+Tip: *avoid spaces, tabs, newlines, or special characters (\*)*
+```bash
+echo ${sample_files[@]}
+echo ${sample_names[@]}
+
+#text with 3 columns, and the third column is filenames
+sample_files=($(cut -f 3 ../file.txt))
+echo ${sample_files[@]}
+
+#then use basename to remove extension
+basename -s .fastq seqs/ABC001.fastq
+```
+## While loops
+
+```bash
+n=1
+while [ $n -le 10 ]
+#other option (( $n <= 10 >))
+do
+    echo "$n"
+    n=$((n+1))
+    #other option (( ++n  ))
+    
+done
+```
+
+* Tip: *force a pause*
+```bash
+sleep 1 #pause for 1 second
+gnome-terminal & #open a terminal
+xterm & #open a terminal
+```
+
+## Practice 
+
+```bash
+#!/bin/bash
+
+set -e
+set -u
+set -o pipefail
+
+# specify the input samples file, where the third column is the path to each sample FASTQ file
+sample_info=samples.txt
+
+# create a Bash array from the third column of $sample_info
+sample_files=($(cut -f 3 "$sample_info"))
+
+for fastq_file in ${sample_files[@]} 
+do
+    # strip .fastq from each file, and add suffix "-stats.txt" to create an output filename
+    results_file="$(basename $fastq_file .fastq)-stats.txt"
+    
+    # run fastq_stat on a file, writing results to the filename we've # above
+    fastq_stat $fastq_file > stats/$results_file
+done
+```
+## Practice
+
+```bash
+#!/bin/bash
+    set -e
+    set -u
+    set -o pipefail
+
+# specify the input samples file, where the third column is the path to each sample FASTQ file
+sample_info=samples.txt
+
+# our reference
+reference=zmays_AGPv3.20.fa
+
+# create a Bash array from the first column, which are 
+# sample names. Because there are duplicate sample names 
+# (one for each read pair), we call uniq 
+
+sample_names=($(cut -f 1 "$sample_info" | uniq))
+
+for sample in ${sample_names[@]} do
+        # create an output file from the sample name
+results_file="${sample}.sam"
+
+bwa mem $reference ${sample}_R1.fastq ${sample}_R2.fastq > $results_file 
+done
+```
+
+
+## While read
+
+```bash
+while read p
+do 
+    echo $p
+done < file.sh
+#another option
+cat file.sh | while read p
+do 
+    echo $p
+done < file.sh
+#another option files with special characters
+while IFS= read -r p
+do
+    echo $p
+done
+```
+
+## Until for loop
+
+```bash
+#If the condition is false
+n=1
+until [ $n -ge 10 ]
+#also possible with until (( $n > 10 ))
+do
+    echo $n
+    n=$(( n+1 ))
+done
+
+## For loop
+
+for variable in 1 2 3 4 5 #list of values
+for variable in {1..10..2} #{start..end..increment}
+for variable in file1 file 2 file 4
+for OUTPUT in $(Linux-command-here)
+for (( EXP1; EXP2; EXP3 ))
+for (( i=0; i<5; i++ ))
+for command in ls pwd date
+```
+
+## Until for loop
+
+```bash
+for item in * #all inside the folder
+do
+    if [ -d $item ]
+    if [ $i -gt 5 ]
+    then 
+        break #get out of the loop
+        continue #
+    then 
+        echo $item    
+
+# Another example
+#!/bin/bash
+for (( i=1 ; i<=10 ; + i++))
+do
+    if [ $i -eq 3 -o $i -eq 6 ]
+```
+
+## Select loop for easy menus 
+
+```bash
+select varName in list #Presented with numbers
+do 
+    command1
+    command2
+    ..
+    commandN
+    case $name in
+    mark)
+        echo mark selected
+        ;;
+    John)
+        echo john selected
+        ;;
+    *)
+        echo "Error"
+    esac
+done
+
+
+select name in mark jhon tom ben
+do
+    echo "$name selected"
+done
+```
+
+## Break and continue 
+
+to exit the loop prematurely
+```bash
+for (( i=1 ; i<=10 ; i++ ))
+do
+    if [ $i -gt 5 ]
+    then 
+        break #continue also possible (excepcions)
+    fi
+    echo "$i"
+done
+```
+
+## Functions 
+
+```bash
+function name(){
+    Commands
+}
+
+#OR
+
+name () {
+    Commands
+}
+
+#Example
+function Hello(){
+    echo "Hello"
+}
+```
+
+## Practice 
+
+```bash
+usage(){
+    echo "you need to provide an argument : "
+    echo "usage : $0 file_name"
+}
+is_file_exist() {
+    local file="$1"
+    [[ -f "$file" ]] && return 0 || return 1
+} 
+
+[[ $# -eq 0 ]] && usage
+
+if ( is_file_exist "$1")
+then
+    echo "File found"
+else
+    echo "File not found"
+fi
+```
+
+## Local variables 
+
+```bash
+function printx(){
+    local name=$1 #it will use the variable only for this function
+    echo "the name is $name"
+}
+```
+#### Read-only
+it cant be overwritten
+```bash
+var=31
+readonly var
+## for functions
+readonly -f 
+```
+
+## Signals and traps 
+
+except SIGKILL and SIGSTOP
+```bash
+trap "echo Exit signal is detected" SIGNIT # or 9
+echo "pid is $$"
+while (( COUNT < 10 ))
+do
+    sleep  10
+    (( COUNT ++ ))
+done
+exit 0
+###############
+kill -9 pid
+trap "echo Exit command is detected" 0 #if it received a 0 value
+echo "Hello world"
+exit 0
+###example
+trap "rm -f $file && echo file deleted; exit" 0 2 15
+```
+
+## Debugging a script 
+
+
+```bash
+bash -x script.sh
+
+###in the shebang
+#!/bin/bash -x
+set -x
+from line 1 to 10
+set +x
+
+#### Globbing
+#!/bin/bash set -e
+set -u
+set -o pipefail
+for file in *.fastq
+do
+    echo "$file: " $(bioawk -c fastx 'END {print NR}' $file)
+done
+```
+
+## Find 
+
+```bash
+ls *.fq | process_fq #may contain errors
+process_fq *.fq #it has some limits
+
+##### Find - find path expressions
+find / | head 
+find -maxdepth 1 . #only this directory
+
+mkdir -p dev/{data/seqs, script, analysis}
+touch path/absolute/xbc{A,B,C}_R{1,2}.fastq
+find path
+
+##### Find expressions
+find path/to/folder -name "filex*fastq" -type f
+# d for directories
+# f for files
+find path/to/folder -name "filex*fastq" -or -name "otrox*fastq" -type f
+#another alternative
+find path/to/folder -type f "!" -name "filex*fastq" -and "!" -name "*temp"
+
+## to remove this files
+find path/to/folder -name "*-temp.fastq" -exec rm {} \;
+```
+
+## XARGS 
+
+`xargs` reads data from stdin (input) and executes the command from the argument one or more times based on input
+if no command -> echo
+programs that take multiple arguments (rm, touch, mkdir)
+
+```bash
+find path/to/folder -name "*-temp.fastq" | xargs -n 1 rm
+#other example
+find zmays-snps/data/seqs -name "*-temp.fastq" > files-to-delete.txt
+cat files-to-delete.txt
+cat files-to-delete.txt | xargs rm
+######
+find . -name "*.fastq" | xargs basename -s ".fastq" | xargs -I{} fastq_stat --in {}.fastq --out ../summaries/{}.txt 
+## Notice that the BSD xargs will only replace up to five instances of the string specified 
+## by -I by default, unless more are set with -R.
+
+```
+
+## XARGS 
+
+We can launch multiple background processes with Bash for loops by adding the ampersand (&) at the end of the command (e.g., for filename in *.fastq; do program “$filename” & done)
+xargs  to run simultaneously with the `-P` option
+
+```bash
+find . -name "*.fastq" | xargs basename -s ".fastq" | xargs -P 6 -I{} fastq_stat --in {}.fastq --out ../summaries/{}.txt 
+## Notice that the BSD xargs will only replace up to five instances of the string specified 
+## by -I by default, unless more are set with -R.
+```
+
+## GNU parallel 
+
+```bash
+find . -name "*.fastq" | parallel --max-procs=6 'program {/.} > {/.}-out.txt'
+```
+#### Make a list of files 
+```bash
+ls -1 | sed 's/\.fastq\.gz//g' > ../PRJEB41550.txt
+```
+
+
+## Instalation
+bwa-mem2 and fastp
+>[Bwa-mem2](https://github.com/bwa-mem2/bwa-mem2)
+
+```bash
+## Samtools
+sudo apt-get upgrade
+sudo apt-get update
+sudo apt-get install -y libncurses-dev libbz2-dev liblzma-dev
+sudo apt-get install libssl-dev
+#### Option 2
+sudo apt-get install libcurl4-openssl-dev
+sudo apt-get install zlib1g-dev
+````
+
+## Installation
+
+```bash
+#Download samtools
+wget  samtools bcftools htslib #LINK
+tar xvjf samtoolsxxxx 
+cd samtoolsxxx
+./configure
+make
+sudo make install
+```
+
+```bash
+##Export to the path
+export PATH="$PATH:/home/labatl/devapps/bwa-mem2"
+export PATH="$PATH:/home/labatl/devapps/htslib/htslib-1.20"
+export PATH="$PATH:/home/labatl/devapps/htslib/bcftools-1.20"
+export PATH="$PATH:/home/labatl/devapps/htslib/samtools-1.20"https://github.com/bwa-mem2/bwa-mem2
+export PATH="$PATH:/home/labatl/devapps"
+#Add it to
+nano ~/.bashrc
+## Source it
+source ~/.bashrc
+```
+## Additional sources
+
+## BASH tutorial - Notes
+
+-   https://github.com/Joseph7e/HCGS-BASH-tutorial
+-   https://github.com/ToniWestbrook/repeatfs
+-   https://geiselmed.dartmouth.edu/nhinbre/research-projects/faculty-admin/faculty/bioinformatics/bioinformatics-modules/
+-   <https://github.com/raynamharris/Shell_Intro_for_Transcriptomics/blob/master/lessons/03_ReadWriteMoveCopy.mdwhoami,> pwd, cd, ls, ls -tlh(sort by time, show details, human readable format)
+-   [https://wikis.utexas.edu/display/bioiteam/Scott's+list+of+linux+one-liners](https://wikis.utexas.edu/display/bioiteam/Scott's+list+of+linux+one-liners)
+-   <https://people.duke.edu/~ccc14/duke-hts-2018/cliburn/Bash_in_Jupyter.html>
+-   <https://laderast.github.io/bash_for_bioinformatics/>
+-   <https://bioinformatics.ccr.cancer.gov/docs/b4b/Module1_Unix_Biowulf/Lesson1/>
+-   <https://practicalcomputing.org/about.html> <https://regex101.com/>
+
+* Coding extensions to check later:
+    *   ShellCheck
+    *   Shell Script Language Basics
+
+* Links
+    * [Shell scripting](https://data-skills.github.io/unix-and-bash/03-bash-scripts/index.html)
+    * [Shell genomics](https://bioinformatics-core-shared-training.github.io/shell-genomics/)
+    * [Shell Alberta](https://sites.ualberta.ca/~stothard/downloads/linux_for_bioinformatics.pdf)
+    * [Omics tutorial](https://omicstutorials.com/comprehensive-guide-to-setting-up-and-using-linux-for-bioinformatics-analysis/)
+* Youtube videos: [Link](https://www.youtube.com/watch?v=dqaMU4v6KvQ&list=PLS1QulWo1RIYmaxcEqw5JhK3b-6rgdWO_&index=13)
