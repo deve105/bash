@@ -1,0 +1,32 @@
+
+
+## Virtual Environment
+
+**venv** allow us to manage every project independently (Avoiding version conflicts).
+    * conda
+    * virtualenv
+
+### 1. Installation
+This should be run only the first time.
+
+```{python}
+# Tip: Everytime I have to use bash (% or !)
+!pip install virtualenv
+!echo "Virtual environment allow to work every project with independent packages versions"
+```
+
+### 2. Create a virtual environment
+
+```{python}
+# a "bashenv" environment has been created (WOS)
+!python -m venv bashenv
+#!virtualenv bashenv 
+```
+
+### 3. Activate venv
+
+```{python}
+
+## Mac
+#source env_name/bin/activate
+```
