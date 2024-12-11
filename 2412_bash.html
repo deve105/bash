@@ -3129,7 +3129,7 @@ vertical-align: -.125em;
 <li>venv: built-in tool</li>
 <li>virtualenv: more advanced and efficient features.</li>
 </ul>
-<div id="67ddbeda" class="cell" data-execution_count="1">
+<div id="efdd3b69" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tip: Everytime I have to use bash (% or !)</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install virtualenv</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>echo <span class="st">&quot;Virtual environment allow to work every project with independent packages versions&quot;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -3137,7 +3137,7 @@ vertical-align: -.125em;
 </section>
 <section id="create-a-virtual-environment" class="level2">
 <h2 class="anchored" data-anchor-id="create-a-virtual-environment">2. Create a virtual environment</h2>
-<div id="25ec353b" class="cell" data-execution_count="2">
+<div id="0c8e691b" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Option A</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># a &quot;bashenv&quot; environment has been created (WOS)</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>python <span class="op">-</span>m venv .venv</span>
@@ -3155,7 +3155,7 @@ vertical-align: -.125em;
 </section>
 <section id="activate-venv" class="level2">
 <h2 class="anchored" data-anchor-id="activate-venv">3. Activate venv</h2>
-<div id="521f994b" class="cell" data-execution_count="3">
+<div id="279c506a" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Windows</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Select interpreter</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># in the terminal .venv\Scripts\activate.ps1</span></span>
@@ -3170,7 +3170,7 @@ vertical-align: -.125em;
 <section id="install-modules" class="level2">
 <h2 class="anchored" data-anchor-id="install-modules">4. Install modules</h2>
 <p>Now every module will be downloaded and installed separately from the global environment (an specific version can also be specified), avoid using ! or % at this step.</p>
-<div id="ce35aea1" class="cell" data-execution_count="4">
+<div id="80427366" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pip install ipykernel pandas jupyter pyyaml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
@@ -3190,7 +3190,7 @@ vertical-align: -.125em;
 <pre><code>* Be careful with spaces.
 * bash, python are spelling and case sensitivity! (Use Tab auto-complete!) 
 * To know more about a command use `man`, `--help`, and `whatis`</code></pre>
-<div id="bed76833" class="cell" data-execution_count="5">
+<div id="9a9ecf7f" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>cat <span class="st">&quot;&quot;&quot;this is my first text,</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="st">If I write a haiku,</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="st">use triple marks&quot;&quot;&quot;</span> <span class="op">&gt;</span> xd.txt</span>
@@ -3960,30 +3960,6 @@ vertical-align: -.125em;
 </section>
 <section id="bash-tutorial---notes" class="level2">
 <h2 class="anchored" data-anchor-id="bash-tutorial---notes">BASH tutorial - Notes</h2>
-<ul>
-<li><p>https://github.com/Joseph7e/HCGS-BASH-tutorial</p></li>
-<li><p>https://github.com/ToniWestbrook/repeatfs</p></li>
-<li><p>https://geiselmed.dartmouth.edu/nhinbre/research-projects/faculty-admin/faculty/bioinformatics/bioinformatics-modules/</p></li>
-<li><p><a href="https://github.com/raynamharris/Shell_Intro_for_Transcriptomics/blob/master/lessons/03_ReadWriteMoveCopy.mdwhoami," class="uri">https://github.com/raynamharris/Shell_Intro_for_Transcriptomics/blob/master/lessons/03_ReadWriteMoveCopy.mdwhoami,</a> pwd, cd, ls, ls -tlh(sort by time, show details, human readable format)</p></li>
-<li><p><a href="https://wikis.utexas.edu/display/bioiteam/Scott&#39;s+list+of+linux+one-liners">https://wikis.utexas.edu/display/bioiteam/Scott’s+list+of+linux+one-liners</a></p></li>
-<li><p><a href="https://people.duke.edu/~ccc14/duke-hts-2018/cliburn/Bash_in_Jupyter.html" class="uri">https://people.duke.edu/~ccc14/duke-hts-2018/cliburn/Bash_in_Jupyter.html</a></p></li>
-<li><p><a href="https://laderast.github.io/bash_for_bioinformatics/" class="uri">https://laderast.github.io/bash_for_bioinformatics/</a></p></li>
-<li><p><a href="https://bioinformatics.ccr.cancer.gov/docs/b4b/Module1_Unix_Biowulf/Lesson1/" class="uri">https://bioinformatics.ccr.cancer.gov/docs/b4b/Module1_Unix_Biowulf/Lesson1/</a></p></li>
-<li><p><a href="https://practicalcomputing.org/about.html" class="uri">https://practicalcomputing.org/about.html</a> <a href="https://regex101.com/" class="uri">https://regex101.com/</a></p></li>
-<li><p>Coding extensions to check later:</p>
-<ul>
-<li>ShellCheck</li>
-<li>Shell Script Language Basics</li>
-</ul></li>
-<li><p>Links</p>
-<ul>
-<li><a href="https://data-skills.github.io/unix-and-bash/03-bash-scripts/index.html">Shell scripting</a></li>
-<li><a href="https://bioinformatics-core-shared-training.github.io/shell-genomics/">Shell genomics</a></li>
-<li><a href="https://sites.ualberta.ca/~stothard/downloads/linux_for_bioinformatics.pdf">Shell Alberta</a></li>
-<li><a href="https://omicstutorials.com/comprehensive-guide-to-setting-up-and-using-linux-for-bioinformatics-analysis/">Omics tutorial</a></li>
-</ul></li>
-<li><p>Youtube videos: <a href="https://www.youtube.com/watch?v=dqaMU4v6KvQ&amp;list=PLS1QulWo1RIYmaxcEqw5JhK3b-6rgdWO_&amp;index=13">Link</a></p></li>
-</ul>
 </section>
 
 </main>

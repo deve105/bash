@@ -929,6 +929,9 @@ source ~/.bashrc
 
 ## BASH tutorial - Notes
 
+```{python}
+#| echo: false
+
 -   https://github.com/Joseph7e/HCGS-BASH-tutorial
 -   https://github.com/ToniWestbrook/repeatfs
 -   https://geiselmed.dartmouth.edu/nhinbre/research-projects/faculty-admin/faculty/bioinformatics/bioinformatics-modules/
@@ -949,3 +952,4 @@ source ~/.bashrc
     * [Shell Alberta](https://sites.ualberta.ca/~stothard/downloads/linux_for_bioinformatics.pdf)
     * [Omics tutorial](https://omicstutorials.com/comprehensive-guide-to-setting-up-and-using-linux-for-bioinformatics-analysis/)
 * Youtube videos: [Link](https://www.youtube.com/watch?v=dqaMU4v6KvQ&list=PLS1QulWo1RIYmaxcEqw5JhK3b-6rgdWO_&index=13)
+```
