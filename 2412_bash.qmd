@@ -6,6 +6,10 @@ author: "Daniel Enriquez-Vera"
 format: 
     html:
         embed-resources: true
+        page-layout: article
+        toc: true
+        toc-location: left
+        toc-title: "Index"
 execute:
     echo: true
     eval: false
@@ -19,7 +23,7 @@ execute:
 - Most pipelines (awk, bash, piping, perl, etc) are based on linux.
 - All bioinformatic tools have a **Linux** version (faster than R and Python).
 - Computer clusters use Linux.
-- Multiple versions of a program of an open-source OS.
+- An open-source system.
 
 :::
 ::: {.column width="50%"}
