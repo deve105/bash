@@ -15,9 +15,11 @@ execute:
     eval: false
 ---
 
-## 1. Why Linux?
+# 1. Basics
 
-::: {.columns}
+## A. Why Linux?
+
+::::{.columns}
 ::: {.column width="50%"}
 
 - Most pipelines (awk, bash, piping, perl, etc) are based on linux.
@@ -31,43 +33,55 @@ execute:
 ![](/images/01.jpeg){with="30%"}
 
 :::
-:::
-
-{{< page break >}}
-
-https://xie186.github.io/Novice2Expert4Bioinformatics/r-introduction.html 
+::::
 
 
+## B. Definitions
 
-## Definitions
+::::{.columns}
+::: {.column width="50%"}
 
 ![bg right height:4in](/images/02cmline.png)
 
+:::
+::: {.column width="50%"}
+
 - GUI: Graphical User Interface (classic interface)
 - Shell: Command line interface
-- We will use VirtualBox (because it is convenient for windows)
+- VirtualBox (for windows)
 
+:::
+::::
 
-## Linux file system
+## C. Linux file system
+
+::::{.columns}
+::: {.column width="50%"}
 
 ![center height:2in](/images/03_structure.png)
+
+:::
+::: {.column width="50%"}
 
 * Tree file system that starts with a forward slash *(/)*
     - Absolute path: ```/starts/from/the/root```
     - Relative path: relative to the working directory (where i am now) ```.```or ```~```or ```..``` or ```-```
 * To know where i am: ```pwd```or ```readlink -f```
 
+:::
+::::
 
-## Commands
+## D. Commands
 
 Basic structure:
 
 ```command [options] [file or arguments]```
-* *It classically has a STDIN and STDOUT*
+
+* **It classically has a STDIN and STDOUT**
 * Basic commands: **ls**, **cd**, **cp**, **mv** and **mkdir -p** 
 * Use always auto-completion ```TAB```
 
-```
+```{bash}
 ls [option] [file]
 ls -a
 ls -t
@@ -75,55 +89,62 @@ ls -l -a
 ls -la #it is possible to combine
 ```
 
-## Application in bioinformatics 
+## E. Application in bioinformatics 
 
-```
+```{bash}
 mkdir -p project/{sequences, results, outputs/{fig, pdf, doc}, scripts}
 ```
+
 * Also **rm**
 
-```
+```{bash}
 #it is a hard remove - BE CAREFUL!
 rm -rf folder
 ```
+
 * View or merge huge files **cat**, **zcat**, also: **more**, **less**, **head and **tail**
-``` 
+
+```{bash} 
 head -n 5 file.txt 
 head -5 file.txt
 ```
 
-## Inputs and outputs
+## F. Inputs and outputs
 
 - STDIN: Standard input or 0
 - STDOUT: Standard output or 1 (it can be directed to a file)
 - STDERR: Standard error or 2
-```
+
+```{bash}
 x="Hola amiguitos!"
 echo $x > hello.txt
 ```
 
 * file usage
 
-```
+```{bash}
 du -sh file
 du -ah file
 ```
-## Check integrity of a file
+## G. Check integrity of a file
 
 Usually, we download many files from a repository.
 
-```
+```{bash}
 md5sum file
 ```
 ---
 
-## File filtering
+
+# 2. Data management
+
+## A. File filtering
 
 **cut**, **sort**, **uniq**, **wc**, **grep**, **paste**
 
 - grep: Global regular expression print (search inside the file for a string or pattern)
 
-```
+```{bash}
 grep "Hola" file.txt | wc -l
 grep -w #exact word
 grep -i #a line | cut -f 1-3,5
@@ -133,20 +154,20 @@ paste ---- file |cut -f1-2 | head -2
 paste - - - - <data/WGBS_example_data/EV1.fastq |cut -f1-2 | sed 's/^@/>/' | tr "\t" "\n"  |head -4
 
 ##from paired to single end https://biowize.wordpress.com/2015/03/26/the-fastest-darn-fastq-decoupling-procedure-i-ever-done-seen/
+
 paste <(paste - - - - < reads-1.fastq) \
       <(paste - - - - < reads-2.fastq) | \
       tr '\t' '\n' > reads-interleave.fastq
 paste - - - - - - - - < reads-int.fastq \
     | tee >(cut -f 1-4 | tr '\t' '\n' > reads-1.fastq) \
     | cut -f 5-8 | tr '\t' '\n' > reads-2.fastq
-```
-
-https://gist.github.com/nathanhaigh/3521724
-
-
-## Find
 
 ```
+
+
+## B. Find
+
+```{bash}
 # Find any files with "Linux" and ".Rmd" in the file names
 find . -type f -name "*Linux*.Rmd"
 
@@ -159,9 +180,9 @@ find . -maxdepth 1 -type f -size +1M
 find . -type f -name "*fa*.pl" -exec ls -l {} +; 
 ```
 
-## Check jobs running
+##Check jobs running
 
-```
+```{bash}
 ps aux
 
 #dynamic realtime view
@@ -176,7 +197,7 @@ df -h
 
 ## CMD II
 
-```
+```{bash}
 #cluster
 myquota
 #memory 
@@ -1196,3 +1217,6 @@ source ~/.bashrc
     * [Omics tutorial](https://omicstutorials.com/comprehensive-guide-to-setting-up-and-using-linux-for-bioinformatics-analysis/)
 * Youtube videos: [Link](https://www.youtube.com/watch?v=dqaMU4v6KvQ&list=PLS1QulWo1RIYmaxcEqw5JhK3b-6rgdWO_&index=13)
 ```
+
+https://xie186.github.io/Novice2Expert4Bioinformatics/r-introduction.html 
+https://gist.github.com/nathanhaigh/3521724
