@@ -8,370 +8,42 @@ format:
         embed-resources: true
         page-layout: article
         toc: true
+        toc-depth: 3
+        toc-title: "Bash Index"
         toc-location: left
-        toc-title: "Index"
+        sidebar: 
+            style: floating
+            background: light
+            collapse-level: 2
 execute:
     echo: true
     eval: false
+code-block-bg: true
+code-block-border-left: "#31BAE9"
+highlight-style: atom-one
 ---
 
-# 1. Basics
+# 1. Unix Facts
 
-## A. Why Linux?
+## A. Basics and definitions
 
-::::{.columns}
-::: {.column width="50%"}
+-   Most pipelines include tools (awk, bash, perl, etc) that are based on UNIX (faster than R and Python).
+-   Computer clusters use Linux (an open-source environment).
+-   GUI: Graphical User Interface (classic interface)
+-   Shell: Command line interface (terminal)
+-   *In windows*: VirtualBox is an option
+-   Flavours of Unix: Ubuntu, MacOS
 
-- Most pipelines (awk, bash, piping, perl, etc) are based on linux.
-- All bioinformatic tools have a **Linux** version (faster than R and Python).
-- Computer clusters use Linux.
-- An open-source system.
+**(simple) Shell \<\< Python (advanced)**
 
-:::
-::: {.column width="50%"}
-
-![](/images/01.jpeg){with="30%"}
-
-:::
-::::
-
-
-## B. Definitions
-
-::::{.columns}
-::: {.column width="50%"}
-
-![bg right height:4in](/images/02cmline.png)
-
-:::
-::: {.column width="50%"}
-
-- GUI: Graphical User Interface (classic interface)
-- Shell: Command line interface
-- VirtualBox (for windows)
-
-:::
-::::
-
-## C. Linux file system
-
-::::{.columns}
-::: {.column width="50%"}
-
-![center height:2in](/images/03_structure.png)
-
-:::
-::: {.column width="50%"}
-
-* Tree file system that starts with a forward slash *(/)*
-    - Absolute path: ```/starts/from/the/root```
-    - Relative path: relative to the working directory (where i am now) ```.```or ```~```or ```..``` or ```-```
-* To know where i am: ```pwd```or ```readlink -f```
-
-:::
-::::
-
-## D. Commands
-
-Basic structure:
-
-```command [options] [file or arguments]```
-
-* **It classically has a STDIN and STDOUT**
-* Basic commands: **ls**, **cd**, **cp**, **mv** and **mkdir -p** 
-* Use always auto-completion ```TAB```
-
-```{bash}
-ls [option] [file]
-ls -a
-ls -t
-ls -l -a
-ls -la #it is possible to combine
-```
-
-## E. Application in bioinformatics 
-
-```{bash}
-mkdir -p project/{sequences, results, outputs/{fig, pdf, doc}, scripts}
-```
-
-* Also **rm**
-
-```{bash}
-#it is a hard remove - BE CAREFUL!
-rm -rf folder
-```
-
-* View or merge huge files **cat**, **zcat**, also: **more**, **less**, **head and **tail**
-
-```{bash} 
-head -n 5 file.txt 
-head -5 file.txt
-```
-
-## F. Inputs and outputs
-
-- STDIN: Standard input or 0
-- STDOUT: Standard output or 1 (it can be directed to a file)
-- STDERR: Standard error or 2
-
-```{bash}
-x="Hola amiguitos!"
-echo $x > hello.txt
-```
-
-* file usage
-
-```{bash}
-du -sh file
-du -ah file
-```
-## G. Check integrity of a file
-
-Usually, we download many files from a repository.
-
-```{bash}
-md5sum file
-```
----
-
-
-# 2. Data management
-
-## A. File filtering
-
-**cut**, **sort**, **uniq**, **wc**, **grep**, **paste**
-
-- grep: Global regular expression print (search inside the file for a string or pattern)
-
-```{bash}
-grep "Hola" file.txt | wc -l
-grep -w #exact word
-grep -i #a line | cut -f 1-3,5
-paste ---- file |cut -f1-2 | head -2
-
-#convert to fasta
-paste - - - - <data/WGBS_example_data/EV1.fastq |cut -f1-2 | sed 's/^@/>/' | tr "\t" "\n"  |head -4
-
-##from paired to single end https://biowize.wordpress.com/2015/03/26/the-fastest-darn-fastq-decoupling-procedure-i-ever-done-seen/
-
-paste <(paste - - - - < reads-1.fastq) \
-      <(paste - - - - < reads-2.fastq) | \
-      tr '\t' '\n' > reads-interleave.fastq
-paste - - - - - - - - < reads-int.fastq \
-    | tee >(cut -f 1-4 | tr '\t' '\n' > reads-1.fastq) \
-    | cut -f 5-8 | tr '\t' '\n' > reads-2.fastq
-
-```
-
-
-## B. Find
-
-```{bash}
-# Find any files with "Linux" and ".Rmd" in the file names
-find . -type f -name "*Linux*.Rmd"
-
-# Count the number of folders
-find . -type f | wc -l
-find . -type f -size +10M
-find . -maxdepth 1 -type f -size +1M
-
-#Do something
-find . -type f -name "*fa*.pl" -exec ls -l {} +; 
-```
-
-##Check jobs running
-
-```{bash}
-ps aux
-
-#dynamic realtime view
-top -c
-#to kill a process k + PID
-#kill a process
-kill number
-#disk space
-df -h
-
-```
-
-## CMD II
-
-```{bash}
-#cluster
-myquota
-#memory 
-free -h
-#who is logged
-w
-who -a
-whoami
-#uptime
-uptime
-#network
-ifconfig
-#User and passwd
-adduser xxxid
-adduser xxxide -g bioinf
-```
-
-## Compressed files
-
-* Check compressed files
-
-```
-zcat file.gz | less
-```
-* Test it if is valid
-
-```
-gzip -t file.gz
-# Decompress
-gunzip file.gz
-# Decompress and keep the original
-gunzip -c file.gz > file
-```
----
-
-## Compressed files (II)
-
-* tar files
-
-```
-tar zxvf file.tar.gz
-#z unzip
-#x exctract
-#v verbosely
-#f the following is a filename
-
-tar -tvf # viewing without extraction
-
-#create a tar
-tar zcvf file.tar.gz file1 file2 file3 folder1
-```
-
-
-## Compressed files (III)
-
-* zip files
-
-```
-zip file.zip
-unzip file.zip
-```
-* tar.bz2
-```
-tar -jxvf file.tar.bz2
-#to create
-tar -cvjSf file.tar.bz2 file1 file2 folder1 folder2
-```
-
-## Copy from the server
-
-```
-rsync
-scp
-```
-
-
-## 1. Virtual Environment
-
-**venv** allow us to manage every project independently (Avoiding version conflicts). Basically, two options:
-
--   Conda
--   Virtualenv or venv
-
-Installation: (only the first time.)
-
--   venv: built-in tool
--   virtualenv: more advanced and efficient features.
-
-```{python}
-# Tip: Everytime I have to use bash (% or !)
-!pip install virtualenv
-!echo "Virtual environment allow to work every project with independent packages versions"
-```
-
-## 2. Create a virtual environment
-
-```{python}
-# Option A
-# a ".venv" environment has been created (WOS)
-!python -m venv .venv
-
-# Option B
-!virtualenv .venv 
-
-# Option C
-# Control + Shift + P, venv
-# create environment, select interpreter
-
-## To delete (just remove it after deactivate and select another interpreter)
-rmdir /s /q .venv
-```
-
-## 3. Activate venv
-
-```{python}
-# Windows
-# Select interpreter
-# in the terminal .venv\Scripts\activate.ps1
-
-## Mac
-# source env_name/bin/activate
-
-## deactivate
-## deselect the interpreter
-```
-
-## 4. Install modules
-
-Now every module will be downloaded and installed separately from the global environment (an specific version can also be specified), avoid using ! or % at this step.
-
-```{python}
-pip install ipykernel pandas jupyter pyyaml
-```
-
-## 5. Anatomy of a command
-
--   `htlvlab\$ cat -1 xd.txt`
-
-    -   **prompt:** \[**user**\]\$
-
-    -   **command:** cat
-
-    -   **option:** -1
-
-    -   **argument:** xd.txt `in this case: a text file`
-
-    -   **cursor:** \|
-
-Tips:
-
-```         
-* Be careful with spaces.
-* bash, python are spelling and case sensitivity! (Use Tab auto-complete!) 
-* To know more about a command use `man`, `--help`, and `whatis`
-```
-
-```{python}
-!cat """this is my first text,
-If I write a haiku,
-use triple marks""" > xd.txt
-!echo "Hola, I speak spanish"
-!cat -1 xd.txt
-```
-
-## 6. Shell
-(simple) Shell << Python (advanced).
-We gonna use it for genomic data processing.
 
 ### Types:
-- Bourne shell (sh) - old stuff
-- Korn shell (ksh) - old stuff x2
-- Bourn again shell (bash) - Linux
 
-## Practice 
+-   Bourne shell (sh) - old stuff
+-   Korn shell (ksh) - old stuff x2
+-   Bourn again shell (bash) - Linux
+
+
 ```bash
 # = 1. Which shell are we using?
 echo $0
@@ -390,51 +62,438 @@ echo $HOME
 echo $PWD
 ```
 
-## Tips: Always avoid errors:
+### Navigation
 
-- Check that files exist.
-- Any error may cause your script to abort 😰.
-- Variable names should not star with a number.
-- Be careful with strings and spaces!
+-   Control + d: delete one character
+-   Control + a: beginning of the line
+-   Control + e: end of the line
+-   Control + k: delete from the active cursor to the end
+-   Control + c: Kill a process
+-   Control + z: send to background
+-   Up: previous
+-   Down: next
 
-## Shebang - a header to call bash
+## B. Linux file system
 
-* First line - our bash path
+Tree file system: path starts with a forward slash `/`
+
+-   Absolute: `/starts/from/the/root`
+-   Relative: to the working directory:
+    -   `.` (current)
+    -   `~` (home) or cd empty
+    -   `..`(one level up), `../..` (two levels up)
+    -   `-` (previous directory and print)
+    -   `~-` (previous directory)
+
+*Tip: To know where I am: `pwd`or `readlink -f`*
+
+![Linux Hierarchical structure](/images/03_structure.png)
+
+## C. Command Syntax
+
+`command [options] [file or arguments]`
+
+-   **prompt:** \[**user**\]\$
+-   **STDIN**: Standard input or 0
+-   **STDOUT**: Standard output or 1 (file `>`)
+-   **STDERR**: Standard error or 2 (command &> logfile, 2> for errors)
+-   Basic commands: **ls**, **cd**, **cp**, **mv** and **mkdir -p**
+-   Be careful with spaces, spelling and case; use always auto-completion `TAB` key
+-   More information: `man command`, `--help`, `whatis`
+-   Example:
+    `htlvlab\$ cat -1 xd.txt`
 
 ```bash
+ls [option] [file]
+ls -a
+ls -t #time, -d details, -h size
+ls -l -a
+
+#it is possible to combine
+ls -la 
+```
+
+### Practice
+
+``` bash
+# Try the following
+date
+echo hello world! # > or >> to add or append
+pwd 
+cd
+man ls
+cat # show the content and concat
+
+# remove - BE CAREFUL!
+rm -rf folder
+rmdir #for directories (empty)
+```
+
+## D. Wildcards
+
+``` bash
+# * - all possible characters
+ls *.xlsx
+# . and ? one possible character
+ls ?asta 
+# Wildcards
+ls [a-z]*.fasta
+ls {abc,bcd}.fasta
+```
+
+### Practice
+
+``` bash
+# Create a whole folder structure, avoid spaces
+mkdir -p project_htlv/{raw_data,metadata,curated_data,output}
+```
+
+### Wilcard list
+
+|              |                                                  |
+|:-------------|:-------------------------------------------------|
+| \[:alpha:\]  | any upper/lowercase letter or \[a-zA-Z\]         |
+| \[:digit:\]  | any digits or \[0-9\].                           |
+| \[:alnum:\]  | any alphabet and digit or \[a-zA-Z0-9\]          |
+| \[:upper:\]  | uppercase or \[A-Z\]                             |
+| \[:lower:\]  | lowercase latter or \[a-z\]                      |
+| \[:blank:\]  | space and tab                                    |
+| \[:print:\]  | printable characters                             |
+| \[:cntrl:\]  | non-printable characters                         |
+| \[:space:\]  | white-space                                      |
+| \[:xdigit:\] | hexadecimal digits                               |
+| \[:ascii:\]  | ASCII characters                                 |
+| \[:word:\]   | alphanumeric characters including underscore(\_) |
+
+### Visualization
+
+View or merge huge files `cat`, `zcat`, also: `more`, `less`, `head` and `tail`
+
+```{.bash}
+head -n 5 file.txt 
+head -5 file.txt
+```
+
+```{.bash}
+# Example
+x="Hola amiguitos!"
+echo $x > hello.txt
+cat hello.txt
+```
+
+## E. System
+
+### Check jobs running
+
+```{.bash}
+ps aux
+
+#dynamic realtime view
+top 
+
+#kill a process
+kill number
+kill -9 number
+kill -9 %<num>
+
+#disk space
+df -h
+
+```
+### Clusters
+```{bash}
+#For clusters
+myquota
+
+#memory 
+free -h
+
+#who is logged
+w
+who -a
+whoami
+
+#uptime
+uptime
+
+#network
+ifconfig
+
+#User and passwd
+adduser xxxid
+adduser xxxide -g bioinf
+```
+
+### Copy from the server
+
+```bash        
+rsync
+scp
+```
+
+## F. Scripting
+
+All programs exit with an exit-status `$?` (0: Successfully, nonzero: error)
+```{.bash}
+
+echo """this is my first text,
+If I write a haiku,
+use triple marks""" > xd.txt; echo $?
+echo "Hola, I speak spanish"
+cat -1 xd.txt
+
+```
+### Tips: Always avoid errors
+
+-   Check that files exist.
+-   Any error may cause your script to abort 😰.
+-   Variable names should not star with a number.
+-   Be careful with strings and spaces!
+
+### Shebang - a header to call bash
+
+-   First line - our bash path
+``` bash
 #!/bin/bash
 ```
-### All the flavours of BASH! (Sanity check)
-* `set -e`: terminate the script if any command existed with a nonzero exit status.
-* `set -u`: not to run any command containing a reference to an unset variable
+
+### All the BASH options! (Sanity check)
+
+-   `set -e`: terminate the script if any command existed with a nonzero exit status.
+-   `set -u`: not to run any command containing a reference to an unset variable.
+-   `set -o pipefail`: if the last program terminates with a nonzero status the pipe, it wont stop.
+
 ```bash
 echo "rm $VAR1/NOTSET*.*"`
 ```
-* `set -o pipefail`: if the last program terminates with a nonzero status the pipe, it wont stop
 
-## My first script 
+### My first script
 
-* First, create a file.
+-   First, create a file:
 
-```bash
+``` bash
 touch myscript.sh
 ```
-```bash
+
+- Add a shebang:
+
+``` bash
 #!/bin/bash
 echo "I am writing this non-sense script for you - DEV" 
 ```
-* Then, make it executable and execute it!
-```bash 
+
+-   Then, make it executable:
+
+``` bash
 chmod +x myscript.sh #permissions (x) for the owner (u)
 chmod u+x myscript.sh
 ```
+
+-   Finally: Execute it!
+
 ```bash
 bash my script.sh
 ```
-## Variables
+---
 
-* We use a dollar sign (`$`) to access a variable.
+# 2. Data management
+
+## A. File management
+
+```{.bash}
+# File Size
+du -sh file
+du -ah file
+```
+
+```{.bash}
+# Copy
+cp filea.txt directory/filea.txt
+# Move
+mv filea.txt directory/filea.txt
+```
+### Compressed files
+
+Check compressed files
+
+```bash        
+zcat file.gz | less
+
+# Check if is valid   
+gzip -t file.gz
+
+# Decompress
+gunzip file.gz
+
+# Decompress and keep the original
+gunzip -c file.gz > file
+```
+### Tar
+
+```bash         
+tar zxvf file.tar.gz
+#z unzip
+#x exctract
+#v verbosely
+#f the following is a filename
+
+tar -tvf # viewing without extraction
+
+#create a tar
+tar zcvf file.tar.gz file1 file2 file3 folder1
+```
+
+### Zip files
+
+```bash        
+zip file.zip
+unzip file.zip
+```
+
+### tar.bz2
+
+```bash      
+tar -jxvf file.tar.bz2
+
+#to create
+tar -cvjSf file.tar.bz2 file1 file2 folder1 folder2
+```
+
+### File integrity 
+
+Reason: files may be corrupted after downloading.
+
+```{.bash}
+md5sum file
+```
+
+## B. File manipulation
+
+**cut**, **sort**, **uniq**, **wc**, **grep**, **paste**
+
+### *grep*: Global regular expression print 
+
+Search inside the file for a string or pattern.
+
+```{.bash}
+grep "Hola" file.txt | wc -l
+grep -w #exact word
+grep -n #line numbers
+grep -v # do not match
+grep -A #prints one line after
+grep -i "a line" | cut -f 1-3,5 # case insensitive
+paste - - - - file |cut -f 1-2 | head -2 # merge the files horizontally with 4 columns
+
+### Practice
+#fastq convert to fasta
+paste - - - - <data/example.fastq |cut -f 1-2 | sed 's/^@/>/' | tr "\t" "\n"  | head -4
+
+## More advance: from paired to single end 
+
+paste < (paste - - - - < reads-1.fastq) \
+      < (paste - - - - < reads-2.fastq) | \
+      tr '\t' '\n' > reads-int.fastq
+paste - - - - - - - - < reads-int.fastq \
+    | tee > (cut -f 1-4 | tr '\t' '\n' > reads-1.fastq) \
+    | cut -f 5-8 | tr '\t' '\n' > reads-2.fastq
+
+wc -l #lines 
+wc -w #words 
+wc -c #characters
+```
+
+(another blog)[https://biowize.wordpress.com/2015/03/26/the-fastest-darn-fastq-decoupling-procedure-i-ever-done-seen/]
+
+### *find*
+
+```{.bash}
+# Find any files with "Linux" and ".Rmd" in the file names
+find . -type f -name "*Linux*.Rmd"
+
+# Count the number of files
+find . -type f | wc -l
+find . -type f -size +10M
+find . -maxdepth 1 -type f -size +1M
+
+# Do something with the file or folder (d)
+find . -type f -name "*fa*.pl" -exec ls -l {} +
+```
+
+### Piping
+
+-   `&&`
+-   `||`
 ```bash
+# Redirecting the output to print
+tail -f 
+
+
+
+```
+
+# 3. Virtual Environment
+
+**venv** allow us to manage every project independently (Avoiding version conflicts). Basically, two options:
+
+-   Conda
+-   Virtualenv or venv
+
+Installation: (only the first time.)
+
+-   venv: built-in tool
+-   virtualenv: more advanced and efficient features.
+
+```{python}
+# Tip: Everytime I have to use bash (% or !)
+!pip install virtualenv
+!echo "Virtual environment allow to work every project with independent packages versions"
+```
+
+## A. Create a virtual environment
+
+```{python}
+# Option A
+# a ".venv" environment has been created (WOS)
+!python -m venv .venv
+
+# Option B
+!virtualenv .venv 
+
+# Option C
+# Control + Shift + P, venv
+# create environment, select interpreter
+
+## To delete (just remove it after deactivate and select another interpreter)
+!rmdir /s /q .venv
+```
+
+## B. Activate venv
+
+```{python}
+# Windows
+# Select interpreter
+# in the terminal .venv\Scripts\activate.ps1
+
+## Mac
+# source env_name/bin/activate
+
+## deactivate
+## deselect the interpreter
+```
+
+## C. Install modules
+
+Now every module will be downloaded and installed separately from the global environment (an specific version can also be specified), avoid using ! or % at this step.
+
+```{python}
+!pip install ipykernel pandas jupyter pyyaml
+```
+
+# 4. Variables
+
+-   We use a dollar sign (`$`) to access a variable.
+
+``` bash
 results_dir="results/"
 
 echo $results_dir
@@ -445,10 +504,12 @@ echo ${results_dir}
 # = Make it more robust with ""
 echo "${results_dir}_abc/"
 ```
-## Variables and arguments 
+
+## A. Variables and arguments
 
 An editor: Yes, we can use any (nano, vim, emacs, etc).
-```bash
+
+``` bash
 echo '
 #!/bin/bash 
 echo "script name: $0"
@@ -458,12 +519,11 @@ echo "third arg: $3" ' > args.sh
 
 bash args.sh arg1 arg2 arg3
 ```
-WHY do I need to learn this $#%@?
 
-... because all bioinformatic tools are written in bash, python, R.
+-   `$0` = script name.
+-   `$1` = argument 1. 
+-   `$#` = number of arguments.
 
-## Practice 
-* `$0` = script name, `$1` = argument 1, `$#` = number of arguments
 ```bash
 echo '#!/bin/bash 
 if [ "$#" -lt 3 ] 
@@ -477,9 +537,10 @@ echo "first arg: $1"
 echo "second arg: $2"
 echo "third arg: $3" ' > args.sh
 ```
-## Practice 
 
-```bash
+## Practice
+
+``` bash
 bash args.sh arg1 arg2
 
 #Passing arguments
@@ -499,9 +560,9 @@ echo $@
 echo $# 
 ```
 
-## Practice 
+## Practice
 
-```bash
+``` bash
 ## using read
 echo "Enter name:"
 read name
@@ -524,11 +585,11 @@ echo "username: $user_var"
 echo "password: $pass_var"
 ```
 
-## Practice 
+## Practice
 
 This is how arrays work in bash:
 
-```bash
+``` bash
 #run the inputs in a array read -a
 read -a names
 echo "names: ${names[0]}, ${names[1]}
@@ -538,11 +599,11 @@ read
 echo "Name: $REPLY"
 ```
 
-## Conditionals 
+# 5. Conditionals
 
-0 means success,anything else is false or failure.
-No need any overhead to call
-```bash
+0 means success,anything else is false or failure. No need any overhead to call.
+
+``` bash
 if [command] then
     [if-statement] #if it is true or 0
     elif
@@ -553,11 +614,11 @@ else
 fi
 ```
 
-## Practice 
+## Practice
 
-* If pipelines is used with `set -o`, any nonzero exit will skip the statement to the next block.
+-   If pipelines is used with `set -o`, any nonzero exit will skip the statement to the next block.
 
-```bash
+``` bash
 echo `#!/bin/bash
 if grep "pattern" some_file.txt > /dev/null 
     then
@@ -570,47 +631,45 @@ if ! grep "pattern" some_file.txt > /dev/null
 fi
 ```
 
-## Expressions
+# 6. Expressions
 
-* An expression can be: String comparison, Numeric comparison, File operators and Logical operators and it is represented by `[expression]:`
+-   An expression can be: String comparison, Numeric comparison, File operators and Logical operators and it is represented by `[expression]:`
 
-### String Comparisons:  
+## A. String Comparisons:
 
-* `=`  compare if two strings are equal; `if [ "$a" = "$b" ]`
-* `!=`  compare if two strings are not equal; `if [ "$a" != "$b" ]`
-* `-n`  evaluate if string length is > 0
-* `-z`  evaluate if string length is = 0 
-* `==` is equal to `if [ "$a" == "$b" ]`
+-   `=` compare if two strings are equal; `if [ "$a" = "$b" ]`
+-   `!=` compare if two strings are not equal; `if [ "$a" != "$b" ]`
+-   `-n` evaluate if string length is \> 0
+-   `-z` evaluate if string length is = 0
+-   `==` is equal to `if [ "$a" == "$b" ]`
 
+## B. Expressions for strings:
 
-## Expressions for strings
+-   `<` is less than, in ASCII alphabetical order `if [[ "$a" < "$b" ]]`
+-   `>` is greater than, in ASCII alphabetical order `if [[ "$a" > "$b" ]]`
 
-* `<` is less than, in ASCII alphabetical order `if [[ "$a" < "$b" ]]`
-* `>` is greater than, in ASCII alphabetical order `if [[ "$a" > "$b" ]]`
+Examples:
 
-Examples: 
-```bash
+``` bash
 [ s1 = s2 ] # (true if s1 same as s2, else false)
 [ s1 != s2 ] # (true if s1 not same as s2, else false)
 [ s1 ]  # (true if s1 is not empty, else false)
 [ -n s1 ] #   (true if s1 has a length greater then 0, else false)
 [ -z s2 ] #  (true if s2 has a length of 0, otherwise false)
 ```
-## Expressions for numbers 
 
-## Number Comparisons: 
+## C. Expressions for numbers
 
-* `-eq` compare if two numbers are equal
-* `-ge` compare if one number is >= to a number, `(("$a" >= "$b"))`
-* `-le`  compare if one number is <= to a number, `(("$a" <= "$b"))`
-* `-ne`  compare if two numbers are not equal
-* `-gt`  compare if one number is > another number, `(("$a" > "$b"))`
-* `-lt`  compare if one number is < another number, `(("$a" < "$b"))`
+-   `-eq` compare if two numbers are equal
+-   `-ge` compare if one number is \>= to a number, `(("$a" >= "$b"))`
+-   `-le` compare if one number is \<= to a number, `(("$a" <= "$b"))`
+-   `-ne` compare if two numbers are not equal
+-   `-gt` compare if one number is \> another number, `(("$a" > "$b"))`
+-   `-lt` compare if one number is \< another number, `(("$a" < "$b"))`
 
+### Practice
 
-## Practice 
-
-```bash
+``` bash
 #Examples: 
 [ n1 -eq n2 ]  #(true if n1 same as n2, else false)
 [ n1 -ge n2 ]  #(true if n1greater then or equal to n2, else false)
@@ -620,7 +679,7 @@ Examples:
 [ n1 -lt n2 ]  #(true if n1 less then n2, else false)
 ```
 
-```bash
+``` bash
 echo -e "Enter the name of the file: \c"
 read file_name
 if [-e $file_name] #exists?
@@ -630,11 +689,9 @@ else
     echo "$file_name not found"
 fi
 ```
+## D. Practice
 
-
-## Practice 
-
-```bash
+``` bash
 echo -e "Enter the name of the file: \c"
 read file_name
 if [ -f $file_name ]
@@ -649,12 +706,11 @@ else
 fi
 ```
 
-## Basic operations in Bash
+# 7. Basic operations in Bash
 
-Operations: + - * / % (remainer after division)
-After expr is necessary \*
+Operations: + - \* / % (remainer after division) After expr is necessary \*
 
-```bash
+``` bash
 num1=20
 num2=
 
@@ -667,29 +723,29 @@ echo "1.5+2.3" | bc
 echo "scale=2; 20.5/5" |bc
 echo "scale=2; sqrt($num)" | bc -l #library with more mathematical formulas
 ```
-> [More information](https://tldp.org/LDP/abs/html/index.html)
 
-## Basic operations 
+## A. Basic operations
 
-* Tips: for floating numbers -> `bc` (basic calculator)
+-   Tips: for floating numbers -\> `bc` (basic calculator)
 
 ### `test` command
 
-* Exits with either 0 or 1, supports standard comparison operators (independenly)
+-   Exits with either 0 or 1, supports standard comparison operators (independenly)
 
-```bash
+``` bash
 test "ATG" = "ATG" ; echo "$?"
 test "ATG" = "atg" ; echo "$?" 
 test 3 -lt 1; echo "$?"
 test 3 -le 3; echo "$?"
 ```
-## Logical operators
 
-* `-d` dir; `-b` a special file; `-c` character file
-* `-s` empty; `-f` file; `-e` file  exists; `-h` link
-* `-r` readable?; `-w` writable?; `-x` executable?
+### Logical operators
 
-```bash
+-   `-d` dir; `-b` a special file; `-c` character file
+-   `-s` empty; `-f` file; `-e` file exists; `-h` link
+-   `-r` readable?; `-w` writable?; `-x` executable?
+
+``` bash
 test -d some_directory ; echo $? # is this a directory? 
 test -f some_file.txt ; echo $? # is this a file?
 test -r some_file.txt ; echo $? # is this file readable?
@@ -702,10 +758,11 @@ if [-f some_file.txt]
 fi
 ```
 
-## Operators
+### Operators
 
-* `-a` AND; `-o` OR; `!` negation; `()` group
-```bash
+-   `-a` AND; `-o` OR; `!` negation; `()` group
+
+``` bash
 age=25
 if [ "$age" -gt 18 ] && [ "$age -lt 30" ]
 then
@@ -718,11 +775,11 @@ fi
 ##  [[ "$age" -gt 18 && "$age -lt 30" ]]
 ```
 
-## Practice 
+### Practice
 
-* Tip: Provide an space after and before
+-   Tip: Provide an space after and before
 
-```bash
+``` bash
 #!/bin/bash
 set -e
 set -u
@@ -732,11 +789,11 @@ if [ "$#" -ne 1 -o ! -r "$1" ]
   then echo "usage: script.sh file_in.txt"
   exit 1 
 fi
-
 ```
-## Case patterns
 
-```bash
+## B. Case patterns
+
+``` bash
 LANG=C #setting the language uppercase
 echo -e "Enter some xxxx: \c"
 read value 
@@ -750,11 +807,11 @@ case $value in
         statement ;;
     ...
 esac
-
 ```
-## Case patterns
 
-```bash
+### More case patterns
+
+``` bash
 #!/usr/bin/bash
 echo -e "Enter a character: \c"
 read value
@@ -773,11 +830,12 @@ case $value in
         echo "unknown input" ;;
 esac        
 ```
-## Arrays
+
+## C. Arrays
 
 A set of elements
 
-```bash
+``` bash
 #!/usr/bin/bash
 os=("ubuntu", "windows", "kali")
 os[3]="mac" #it will add mac to the array
@@ -789,11 +847,12 @@ echo "${os[1]}" #to print windows (2)
 echo "${!os[@]}" #prints the elements (0 1 2)
 echo "${#os[@]}" #prints the length of the array
 ```
-## Loops
 
-It's better to have a list of files
-Tip: *avoid spaces, tabs, newlines, or special characters (\*)*
-```bash
+## D. Loops
+
+It's better to have a list of files Tip: *avoid spaces, tabs, newlines, or special characters (\*)*
+
+``` bash
 echo ${sample_files[@]}
 echo ${sample_names[@]}
 
@@ -804,9 +863,10 @@ echo ${sample_files[@]}
 #then use basename to remove extension
 basename -s .fastq seqs/ABC001.fastq
 ```
-## While loops
 
-```bash
+## E. While loops
+
+``` bash
 n=1
 while [ $n -le 10 ]
 #other option (( $n <= 10 >))
@@ -818,16 +878,17 @@ do
 done
 ```
 
-* Tip: *force a pause*
-```bash
+-   Tip: *force a pause*
+
+``` bash
 sleep 1 #pause for 1 second
 gnome-terminal & #open a terminal
 xterm & #open a terminal
 ```
 
-## Practice 
+### Practice
 
-```bash
+``` bash
 #!/bin/bash
 
 set -e
@@ -849,9 +910,10 @@ do
     fastq_stat $fastq_file > stats/$results_file
 done
 ```
-## Practice
 
-```bash
+### Practice
+
+``` bash
 #!/bin/bash
     set -e
     set -u
@@ -877,10 +939,9 @@ bwa mem $reference ${sample}_R1.fastq ${sample}_R2.fastq > $results_file
 done
 ```
 
+## F. While read
 
-## While read
-
-```bash
+``` bash
 while read p
 do 
     echo $p
@@ -897,9 +958,9 @@ do
 done
 ```
 
-## Until for loop
+## G. Until for loop
 
-```bash
+``` bash
 #If the condition is false
 n=1
 until [ $n -ge 10 ]
@@ -920,9 +981,9 @@ for (( i=0; i<5; i++ ))
 for command in ls pwd date
 ```
 
-## Until for loop
+### Until for loop
 
-```bash
+``` bash
 for item in * #all inside the folder
 do
     if [ -d $item ]
@@ -940,9 +1001,9 @@ do
     if [ $i -eq 3 -o $i -eq 6 ]
 ```
 
-## Select loop for easy menus 
+### Select loop for easy menus
 
-```bash
+``` bash
 select varName in list #Presented with numbers
 do 
     command1
@@ -968,10 +1029,11 @@ do
 done
 ```
 
-## Break and continue 
+## H. Break and continue
 
 to exit the loop prematurely
-```bash
+
+``` bash
 for (( i=1 ; i<=10 ; i++ ))
 do
     if [ $i -gt 5 ]
@@ -982,9 +1044,9 @@ do
 done
 ```
 
-## Functions 
+# 8. Functions
 
-```bash
+``` bash
 function name(){
     Commands
 }
@@ -1001,9 +1063,9 @@ function Hello(){
 }
 ```
 
-## Practice 
+## Practice
 
-```bash
+``` bash
 usage(){
     echo "you need to provide an argument : "
     echo "usage : $0 file_name"
@@ -1023,27 +1085,31 @@ else
 fi
 ```
 
-## Local variables 
+## Local variables
 
-```bash
+``` bash
 function printx(){
     local name=$1 #it will use the variable only for this function
     echo "the name is $name"
 }
 ```
+
 #### Read-only
+
 it cant be overwritten
-```bash
+
+``` bash
 var=31
 readonly var
 ## for functions
 readonly -f 
 ```
 
-## Signals and traps 
+## Signals and traps
 
 except SIGKILL and SIGSTOP
-```bash
+
+``` bash
 trap "echo Exit signal is detected" SIGNIT # or 9
 echo "pid is $$"
 while (( COUNT < 10 ))
@@ -1061,10 +1127,9 @@ exit 0
 trap "rm -f $file && echo file deleted; exit" 0 2 15
 ```
 
-## Debugging a script 
+## Debugging a script
 
-
-```bash
+``` bash
 bash -x script.sh
 
 ###in the shebang
@@ -1083,9 +1148,9 @@ do
 done
 ```
 
-## Find 
+## Find
 
-```bash
+``` bash
 ls *.fq | process_fq #may contain errors
 process_fq *.fq #it has some limits
 
@@ -1109,13 +1174,11 @@ find path/to/folder -type f "!" -name "filex*fastq" -and "!" -name "*temp"
 find path/to/folder -name "*-temp.fastq" -exec rm {} \;
 ```
 
-## XARGS 
+## XARGS
 
-`xargs` reads data from stdin (input) and executes the command from the argument one or more times based on input
-if no command -> echo
-programs that take multiple arguments (rm, touch, mkdir)
+`xargs` reads data from stdin (input) and executes the command from the argument one or more times based on input if no command -\> echo programs that take multiple arguments (rm, touch, mkdir)
 
-```bash
+``` bash
 find path/to/folder -name "*-temp.fastq" | xargs -n 1 rm
 #other example
 find zmays-snps/data/seqs -name "*-temp.fastq" > files-to-delete.txt
@@ -1125,36 +1188,35 @@ cat files-to-delete.txt | xargs rm
 find . -name "*.fastq" | xargs basename -s ".fastq" | xargs -I{} fastq_stat --in {}.fastq --out ../summaries/{}.txt 
 ## Notice that the BSD xargs will only replace up to five instances of the string specified 
 ## by -I by default, unless more are set with -R.
-
 ```
 
-## XARGS 
+## XARGS
 
-We can launch multiple background processes with Bash for loops by adding the ampersand (&) at the end of the command (e.g., for filename in *.fastq; do program “$filename” & done)
-xargs  to run simultaneously with the `-P` option
+We can launch multiple background processes with Bash for loops by adding the ampersand (&) at the end of the command (e.g., for filename in \*.fastq; do program “\$filename” & done) xargs to run simultaneously with the `-P` option
 
-```bash
+``` bash
 find . -name "*.fastq" | xargs basename -s ".fastq" | xargs -P 6 -I{} fastq_stat --in {}.fastq --out ../summaries/{}.txt 
 ## Notice that the BSD xargs will only replace up to five instances of the string specified 
 ## by -I by default, unless more are set with -R.
 ```
 
-## GNU parallel 
+## GNU parallel
 
-```bash
+``` bash
 find . -name "*.fastq" | parallel --max-procs=6 'program {/.} > {/.}-out.txt'
 ```
-#### Make a list of files 
-```bash
+
+#### Make a list of files
+
+``` bash
 ls -1 | sed 's/\.fastq\.gz//g' > ../PRJEB41550.txt
 ```
 
+# 9. Bioinformatics software instalation
 
-## Instalation
-bwa-mem2 and fastp
->[Bwa-mem2](https://github.com/bwa-mem2/bwa-mem2)
+bwa-mem2 and fastp \>[Bwa-mem2](https://github.com/bwa-mem2/bwa-mem2)
 
-```bash
+``` bash
 ## Samtools
 sudo apt-get upgrade
 sudo apt-get update
@@ -1163,11 +1225,11 @@ sudo apt-get install libssl-dev
 #### Option 2
 sudo apt-get install libcurl4-openssl-dev
 sudo apt-get install zlib1g-dev
-````
+```
 
 ## Installation
 
-```bash
+``` bash
 #Download samtools
 wget  samtools bcftools htslib #LINK
 tar xvjf samtoolsxxxx 
@@ -1177,7 +1239,7 @@ make
 sudo make install
 ```
 
-```bash
+``` bash
 ##Export to the path
 export PATH="$PATH:/home/labatl/devapps/bwa-mem2"
 export PATH="$PATH:/home/labatl/devapps/htslib/htslib-1.20"
@@ -1189,6 +1251,7 @@ nano ~/.bashrc
 ## Source it
 source ~/.bashrc
 ```
+
 ## Additional sources
 
 ## BASH tutorial - Notes
@@ -1218,5 +1281,10 @@ source ~/.bashrc
 * Youtube videos: [Link](https://www.youtube.com/watch?v=dqaMU4v6KvQ&list=PLS1QulWo1RIYmaxcEqw5JhK3b-6rgdWO_&index=13)
 ```
 
-https://xie186.github.io/Novice2Expert4Bioinformatics/r-introduction.html 
-https://gist.github.com/nathanhaigh/3521724
+https://xie186.github.io/Novice2Expert4Bioinformatics/r-introduction.html https://gist.github.com/nathanhaigh/3521724
+
+> [More information](https://tldp.org/LDP/abs/html/index.html)
+https://github.com/raynamharris/Shell_Intro_for_Transcriptomics/tree/master
+https://practicalcomputing.org/
+https://explainshell.com/
+https://data-skills.github.io/unix-and-bash/01-unix-git-intro/index.html 
