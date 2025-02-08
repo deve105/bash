@@ -117,7 +117,10 @@ Tree file system: path starts with a forward slash `/`
 # ls [option] [file]
 ls -a #hidden
 ls -t #time, -d details, -h size
-ls -l -a
+ls -l -a #characteristics
+ls -tlh
+ls -l | grep -Ev '^d' #showing only files
+ls -l | grep -E '^d' # only folders
 
 # it is possible to combine
 ls -la 
@@ -185,6 +188,14 @@ mkdir results-$(date +%F)
 | \[:xdigit:\] | hexadecimal digits                               |
 | \[:ascii:\]  | ASCII characters                                 |
 | \[:word:\]   | alphanumeric characters including underscore(\_) |
+
+'^It' #starts the line with It
+'[0-9]+' #line with numbers
+[!a-d]* # negates
+[^A-Z] #match anything not in the set
+['[:punct:]'] #comma or .
+[a|b|c] a or b or c
+(cat|dog) cat or dog
 
 ### Visualization
 
@@ -322,6 +333,16 @@ chmod u+x myscript.sh
 bash my script.sh
 ```
 
+```{.bash}
+# set variables
+dirpath='PATH'
+fasta='file'
+echo ${dirpath} #use always ${}
+variables=$(pwd) #without spaces for commands
+echo "hello ${NAME1}"
+((NUM++)) #double parantheses for mathematical expressions
+```
+
 ### Nano
 
 Control + o = save
@@ -360,6 +381,7 @@ gzip *.fa
 
 # Decompress
 gunzip file.gz
+gunzip SRR*_1R2.fastq.gz
 
 # Decompress and keep the original
 gunzip -c file.gz > file
@@ -372,6 +394,8 @@ tar zxvf file.tar.gz
 #x exctract
 #v verbosely
 #f the following is a filename
+#	c compress
+# t view list
 
 tar -tvf # viewing without extraction
 
@@ -401,7 +425,13 @@ tar -cvjSf file.tar.bz2 file1 file2 folder1 folder2
 Reason: files may be corrupted after downloading.
 
 ```{.bash}
-md5sum file
+
+#integrity for data transfer checksum
+md5sum *fa > MD5_checksum
+#to check
+md5sum -c MD5_checksum
+#to compare then with the original file
+diff -u file1 file2 | cat
 ```
 
 ## B. File manipulation
@@ -420,11 +450,23 @@ Search inside the file for a string or pattern.
 ```{.bash}
 grep "Hola" file.txt | wc -l
 grep -w #exact word
+grep -c # count number of lines
 grep -n #line numbers
 grep -v # do not match
-grep -A #prints one line after
+grep -E #no need to escape special characters, -Ev invert option
+grep --color
+grep -l #files
+grep -A 1 #prints one line after
+grep -o '[A-Z]*' # get rid of numbers
 grep -i "a line" | cut -f 1-3,5 # case insensitive
 paste - - - - file |cut -f 1-2 | head -2 # merge the files horizontally with 4 columns
+grep -E ab+c # one or more of the preceding character abbbbbbcd
+grep -E ab*cd # zero or more of the preceding character
+grep -E 'ab{1,5}cd' #number of repetitions of the preceding character set
+'\<the\>' # word boundaries
+grep -E '([0-9]+).*\1'
+'([0-9]+)_([0-9]+)_\1_\2' #repeated twice
+grep "[2|4]" #lines 2 and 4
 
 ### Practice
 #fastq convert to fasta
@@ -470,6 +512,29 @@ cat hg38_gene_annotation_mart_export.txt | grep -v "^#" | grep -w "protein_codin
 # Zcat to open .gz files
 
 zcat Homo_sapiens.GRCh38.87_badStructure.table.gz | sed 's/gene_id "//' | sed 's/gene_name "//' | sed 's/gene_biotype "//' | sed 's/"//g' | sed '1i\Geneid\tGeneSymbol\tChromosome\tClass\tStrand\tLength' | sed 's/ //g' | head
+
+
+# convert DNA to RNA
+cat file.txt | tr T U
+#tr -d 'AT' (delete)
+tr '\t' ','#tsv to csv
+tr a-z A-Z
+tr ACTG TGAC
+
+# convert reverse complement
+grep -o '[ACTG]*' junk.txt | tr ACGT TGCA | rev
+grep '[CG]' -o file | wc -l #count only CG
+
+#find unique features
+zcat $DATA_DIR/$GTF | grep -v '^#' | cut -f 3 | sort | uniq
+#counts
+zcat $DATA_DIR/$GTF | grep -v '^#' | cut -f 3 | sort | uniq -c
+#first 3 exons
+zcat $DATA_DIR/$GTF | grep -v '^#' | awk '$3 == "exon"' | head -3
+#attributes
+zcat $DATA_DIR/$GTF | grep -v '^#' | awk '$3 == "gene"' | cut -f 9 > genes.txt
+
+
 ```
 
 
@@ -477,7 +542,7 @@ zcat Homo_sapiens.GRCh38.87_badStructure.table.gz | sed 's/gene_id "//' | sed 's
 ### *find*
 
 ```{.bash}
-# Find any files with "Linux" and ".Rmd" in the file names
+# Find any files with "Linux" and ".Rmd" in the file names, -iname, -maxdepth 1, -ctime +1, -mtime -1, -mmin -15
 find . -type f -name "*Linux*.Rmd"
 
 # Count the number of files
@@ -493,7 +558,10 @@ find . -type f -name "*fa*.pl" -exec ls -l {} +
 cut: Choose a column from a tab-delimited file (spreadsheet)
  `cut -f (column number to choose) file.txt`
 
-
+```{.bash}
+cut extracts columns separated by delimiters (-d)
+cut -d " " -f 2 file.txt #column 2 or 1,3,5 or 1-5
+```
 ### *uniq*
 
 Recognize two or more adjacent lines are the same.
@@ -524,6 +592,7 @@ ls ~ | wc -l
 -   `&&`: Continue only if the first is completed successfully.
 -   `||`: Continue only if the first is completed unsuccessfully.
 
+\ continue to next line or pipe |
 
 ```bash
 # Redirecting the output to print
@@ -1419,11 +1488,264 @@ Allows to filter/replace efficiently text in a pipeline
 
 ```bash
 sed -n 1,2p Homo_sapiens.GRCh38.87_annotation.table
+sed -n "1~2p" file.txt #-n not print, extract only odd numbered lines
+zcat $DATA_DIR/$FASTQ | sed -n '2~4p;' | head | tr -d '\n' #extract every 4th line
+sed -n '2000,2005p' #number of lines
+sed "s/[0-9][0-9]*\.[[:space:]]//g" file.txt # g global
 ```
 
 Manual[https://www.gnu.org/software/sed/manual/sed.html]
 (Extended REGEX)[http://austingroupbugs.net/view.php?id=528]
+
+# Loops
+
+*  `for` is use for iterating over a fixed number of items (may be unknown at time of coding).
+*  `while` is use for iterating until a certain condition is met
+
+```{python}
+#### Loops
+##### Examples of for
+for file in ../data/${@}
+do
+	wc ${file} >> ../data/wordcount.txt
+done
+
+for file in ../data/${@}
+do
+	output=$(basename ${file} .fastq)-wordcount.txt 
+	wc ${file} >> ../results/${output}
+done
+
+for loops
+for i in $( ls ); do echo item: $i 
+done
+
+##### Examples of while
+while true; do echo ‘hello’ done
+
+#### Conditionals
+if [ "foo" = "foo" ]; then
+else
+fi
+
+##### Iterating with xargs -I one by one -0 avoid blanks
+ls *.fasta | xargs -I% sh -c 'head %; echo "\n---\n"'
+#sh -c "to call shell instead of bash"
+#https://www.baeldung.com/linux/xargs-multiple-arguments
+my_variable="ggplot2"
+
+echo "My favorite R package is ${my_variable}"
+my_var="chr1"
+echo "${my_var}_1.vcf.gz"
+
+#script
+
+#STDIN -> STDOUT+STDERR
+I/O redirections: |,<,>
+ps -aef #show a list of all processes running
+bash sam_run my_file.bam out_stats.txt
+#!/bin/bash/
+samtools stats $1 > $2
+#!/bin/bash/
+samtools stats $2 > $1 #output primero
+
+#to hack SIGPIPE error in Jupyter
+cleanup () {
+    :
+}
+
+trap "cleanup" SIGPIPE
+#safety
+set -u #unset variables as an error and exit
+
+
+
+
+
+grep -v "^>" ../data/tb1.fasta | grep --color -i "[^ATCG]"
+CCCCAAAGACGGACCAATCCAGCAGCTTCTACTGCTAYCCATGCTCCCCTCCCTTCGCCGCCGCCGACGC
+
+for file in ../data/${@}
+do
+    output=$(basename ${file} .fastq)-wordcount.txt
+    wc ${file} >> ../data/wordcount.txt
+done
+
+mkdir dataseq
+
+while read
+fasterq-dump -p --split-files $inputsra -O ./dataseq
+
+
+
+echo "Start!"
+
+for sra in (txt)
+do
+    echo "${p}"
+    while [ $(jobs | wc -l) -ge "$maxproc" ]
+    do
+        sleep 1
+    done
+    base=${fname%_R1*}
+    echo starting new job with ongoing=$(jobs | wc -l)
+    bwa-0.7.5a/bwa mem -t 4 human_g1k_v37.fasta "${base}_R1.fastq.gz" "${base}_R2.fastq.gz" >"$destdir/${base}_R1_R2.sam" &
+done
+
+
+
+#if to check for file existence
+if [-f hello.txt]; then
+	cat hello.txt
+else
+	echo "no such file"
+fi
+
+if [! -f "data/file"]; then
+	wget url -O data/file
+fi
+
+#test for conditional evaluation
+test -f file o [-f file]
+
+#Loops
+for i in SRRR*;
+do
+    echo ${i} #inserted in a line with other characters
+done
+for file in copy-SRR534005*; 
+echo $file ${file//SRR534005/chicken}; 
+do mv $file ${file//SRR534005/chicken}; 
+done
+
+for FILE in $(ls *ipynb); do
+    echo $FILE
+done
+
+for ((i=0; i<5; i++)); do
+    echo $i
+done
+
+test -a = &&
+test -o = ||
+=~ to match regular expressions patterns
+
+for FILE in $(ls); do
+    if [[ "${FILE}" =~ ^Bash.*sh ]]; then
+        echo $FILE
+    fi
+done
+
+COUNTER=10
+while [ $COUNTER -gt 0 ]; do
+    echo $COUNTER
+    COUNTER=$(($COUNTER - 1))
+done
+
+-lt #less than
+-gt #greater than
+== #equaity
+!= #inequality
+
+#braces in loops
+for NUM in {000..005}; do
+    echo mkdir EXPT-${NUM}
+done
+echo foo.{c,cpp,h,hp}
+#loop first 10 records
+LINE_NUM=0
+while read LINE
+do
+    if [[ $LINE_NUM -lt 10 ]]; then
+        echo $LINE
+        (( LINE_NUM++ ))
+    fi
+done < genes.txt
+
+#command expressions $(command), #basename without path, dirname
+#remove the file extension Y=${x%.*}
+for FILE in $(ls ~/docs/*)
+do
+    DIR_NAME=$(dirname $FILE)
+    FILE_NAME=$(basename $FILE)
+    NAME=${FILE_NAME%.*}
+    NEW_DIR=$DIR_NAME/$NAME
+    NEW_FILE=${NAME}-copy.txt
+    mkdir -p $NEW_DIR
+    cat $FILE | head -3 | tail -2  > $NEW_DIR/$NEW_FILE
+done
+
+
+
+for FILE in $(ls $DATA_DIR/*_MA_J_S20_*gz)
+do
+    FIRST=$(zcat $FILE 2>/dev/null | head -1)
+    echo $(basename $FILE)
+    echo $FIRST
+    echo
+done
+#script
+#!/path/to/shell or bash path/file
+#!/bin/bash or which bash
+
+chmod +x /path/to/script
+
+#!/bin/bash
+# "#" gives you the number from the command line
+echo $# 
+for ARG in {0..$#}; do
+    echo $ARG
+done
+EOF
+
+
+bash echo.sh
+for file in *.fastq
+do
+	echo ${file}
+done
+
+#script with input specifications
+bash wordcount.sh *R1.fastq
+for file in ${@}
+do
+	wc ${file}
+done
+#structure
+bin, data, results, manuscript
+
+
+cat > count_lines.sh << 'EOF'
+#!/bin/bash
+
+for FILE in $(ls)
+do
+    wc -l "${FILE}"
+done
+EOF
+
+```
+
+# AWK
+
+```{.bash}
+#tutorial
+
+cat file.txt | awk -F '\t' '$1=="Mt"' | head -3
+cat file.txt | awk -F '\t' '$1=="2"' {print $3} | sort | uniq -c
+cat docs/echo.txt | awk 'BEGIN {FS = ","} ; $5 == "M"' > docs/male.txt
+
+
+```
 ## Additional sources
+
+### Seq
+
+seq function
+generates a range of numbers
+seq 3
+seq 2 5
+seq 5 2 9
 
 ## BASH tutorial - Notes
 
@@ -1519,3 +1841,15 @@ https://www.thegeekstuff.com/2010/03/awk-arrays-explained-with-5-practical-examp
 https://notebook.community/crazyhottommy/scripts-general-use/Shell/Awk_anotates_vcf_with_bed
 
 (another blog)[https://biowize.wordpress.com/2015/03/26/the-fastest-darn-fastq-decoupling-procedure-i-ever-done-seen/]
+
+Sources for scripts
+https://jeroenjanssens.com/dsatcl/
+https://missing.csail.mit.edu/2020/course-shell/
+https://swcarpentry.github.io/shell-novice/04-pipefilter/index.html https://datascienceatthecommandline.com/2e/chapter-2-getting-started.html?q=stdin#combining-command-line-tools
+
+wget http://kandurilab.org/users/santhilal/courses/UNIX/materials/course_file_repo.zip
+
+Onedrive
+wget -qO - https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/obs-onedrive.gpg > /dev/null
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/./" | sudo tee /etc/apt/sources.list.d/onedrive.list
