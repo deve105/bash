@@ -36,6 +36,10 @@ highlight-style: atom-one
 
 **(simple) Shell \<\< Python (advanced)**
 
+### Steps for Linux installation:
+
+-   Turn windows features on or off
+-   check windows subsystem for linux
 
 ### Types:
 
@@ -70,8 +74,12 @@ echo $PWD
 -   Control + k: delete from the active cursor to the end
 -   Control + c: Kill a process
 -   Control + z: send to background
+-   `clear`
 -   Up: previous
 -   Down: next
+-   Add a `&` at the end to send it to background
+-   Check background work using `jobs`
+-   Bring it back `fg %ID`
 
 ## B. Linux file system
 
@@ -102,15 +110,20 @@ Tree file system: path starts with a forward slash `/`
 -   More information: `man command`, `--help`, `whatis`
 -   Example:
     `htlvlab\$ cat -1 xd.txt`
+- For intermediate file creation:
+`program1 input.txt | tee intermediate-file.txt | program2 > results.txt`
 
 ```bash
-ls [option] [file]
-ls -a
+# ls [option] [file]
+ls -a #hidden
 ls -t #time, -d details, -h size
 ls -l -a
 
-#it is possible to combine
+# it is possible to combine
 ls -la 
+
+# use tree to see all the structure
+tree -a
 ```
 
 ### Practice
@@ -128,7 +141,11 @@ cat # show the content and concat
 rm -rf folder
 rmdir #for directories (empty)
 ```
+### Downloading 
 
+```{bash}
+wget http://address
+```
 ## D. Wildcards
 
 ``` bash
@@ -143,9 +160,13 @@ ls {abc,bcd}.fasta
 
 ### Practice
 
+Usual project organization:
+{bin,data,results,manuscripts}
 ``` bash
 # Create a whole folder structure, avoid spaces
 mkdir -p project_htlv/{raw_data,metadata,curated_data,output}
+
+mkdir results-$(date +%F)
 ```
 
 ### Wilcard list
@@ -167,7 +188,7 @@ mkdir -p project_htlv/{raw_data,metadata,curated_data,output}
 
 ### Visualization
 
-View or merge huge files `cat`, `zcat`, also: `more`, `less`, `head` and `tail`
+View or merge huge files `cat`, `zcat`, also: `more`, `less`, `head` and `tail` (use `q` to exit)
 
 ```{.bash}
 head -n 5 file.txt 
@@ -179,6 +200,8 @@ head -5 file.txt
 x="Hola amiguitos!"
 echo $x > hello.txt
 cat hello.txt
+
+## Excercise, using cat concat a list of fasta files
 ```
 
 ## E. System
@@ -234,6 +257,9 @@ scp
 ## F. Scripting
 
 All programs exit with an exit-status `$?` (0: Successfully, nonzero: error)
+
+`.sh` extension for bash executable files.
+
 ```{.bash}
 
 echo """this is my first text,
@@ -253,6 +279,7 @@ cat -1 xd.txt
 ### Shebang - a header to call bash
 
 -   First line - our bash path
+
 ``` bash
 #!/bin/bash
 ```
@@ -294,6 +321,12 @@ chmod u+x myscript.sh
 ```bash
 bash my script.sh
 ```
+
+### Nano
+
+Control + o = save
+Control + x = exit
+
 ---
 
 # 2. Data management
@@ -316,11 +349,14 @@ mv filea.txt directory/filea.txt
 
 Check compressed files
 
-```bash        
+```bash
 zcat file.gz | less
 
 # Check if is valid   
 gzip -t file.gz
+
+# Compress multiple files, to keep the original -k
+gzip *.fa
 
 # Decompress
 gunzip file.gz
@@ -344,6 +380,7 @@ tar zcvf file.tar.gz file1 file2 file3 folder1
 ```
 
 ### Zip files
+
 
 ```bash        
 zip file.zip
@@ -371,6 +408,11 @@ md5sum file
 
 **cut**, **sort**, **uniq**, **wc**, **grep**, **paste**
 
+```bash
+sort -n lenghts.txt #ordena de forma numerica
+head -n lenghts.txt
+wc *.fastq | sort -n | head -1
+```
 ### *grep*: Global regular expression print 
 
 Search inside the file for a string or pattern.
@@ -402,7 +444,35 @@ wc -w #words
 wc -c #characters
 ```
 
-(another blog)[https://biowize.wordpress.com/2015/03/26/the-fastest-darn-fastq-decoupling-procedure-i-ever-done-seen/]
+```{.bash}
+# Translate 
+echo "santhilal" | tr a-z A-Z
+```
+
+```{.bash}
+fastafile=xxxx.fa
+grep -v "^>" $fastafile | grep --color -i "[^ATCG]"
+
+echo "There are $(grep -c '^>' $fastafile) entries in my FASTA file."
+
+# Examples, grep -w "...." = 4 characters
+cat H0.list | grep "^USP*" # Here '^' means 'line starts with'
+cat H0.list | grep "USP*"
+cat H0.list | grep "\.[0-9]$" # $the ending part
+
+# real life examples
+cat hg38_gene_annotation_mart_export.txt | grep -v "^#" | cut -f1 | sort | uniq | wc -l # This counts total number of unique genes in the annotation
+
+cat hg38_gene_annotation_mart_export.txt | grep -v "^#" | cut -f7 | sort | uniq | wc -l # This counts total number of unique transcripts
+
+cat hg38_gene_annotation_mart_export.txt | grep -v "^#" | grep -w "protein_coding" | cut -f1 | sort | uniq | wc -l # Counts only total number of protein coding genes
+
+# Zcat to open .gz files
+
+zcat Homo_sapiens.GRCh38.87_badStructure.table.gz | sed 's/gene_id "//' | sed 's/gene_name "//' | sed 's/gene_biotype "//' | sed 's/"//g' | sed '1i\Geneid\tGeneSymbol\tChromosome\tClass\tStrand\tLength' | sed 's/ //g' | head
+```
+
+
 
 ### *find*
 
@@ -418,20 +488,71 @@ find . -maxdepth 1 -type f -size +1M
 # Do something with the file or folder (d)
 find . -type f -name "*fa*.pl" -exec ls -l {} +
 ```
+### *cut*
+
+cut: Choose a column from a tab-delimited file (spreadsheet)
+ `cut -f (column number to choose) file.txt`
+
+
+### *uniq*
+
+Recognize two or more adjacent lines are the same.
+
+*   uniq -c para contar
+*   uniq -w N solo usa los xxx caracteres iniciales para evaluar si son iguales
+
+```bash
+sort haiku.txt | uniq -c 
+
+history # historial
+
+# Example first all step by step
+ls ~ > file_list.txt
+wc -l file_list.txt
+rm file_list.txt
+
+# piping the data from one command to another
+ls ~ | wc -l
+
+```
+
+
+
 
 ### Piping
 
--   `&&`
--   `||`
+-   `&&`: Continue only if the first is completed successfully.
+-   `||`: Continue only if the first is completed unsuccessfully.
+
+
 ```bash
 # Redirecting the output to print
 tail -f 
 
+true && echo "works"
 
+##  Example
+for file in ${@}
+do 
+    wc ${file}
+done
+
+
+for file in ../data/${@}
+do
+    output=$(basename ${file} .fastq)-wordcount.txt
+    wc ${file} >> ../data/wordcount.txt
+done
+
+mkdir dataseq
+
+
+while read
+fasterq-dump -p --split-files $inputsra -O ./dataseq
 
 ```
 
-# 3. Virtual Environment
+# 3. Virtual Environment for Python
 
 **venv** allow us to manage every project independently (Avoiding version conflicts). Basically, two options:
 
@@ -481,7 +602,7 @@ Installation: (only the first time.)
 ## deselect the interpreter
 ```
 
-## C. Install modules
+## C. Install modules for Python
 
 Now every module will be downloaded and installed separately from the global environment (an specific version can also be specified), avoid using ! or % at this step.
 
@@ -1158,7 +1279,7 @@ process_fq *.fq #it has some limits
 find / | head 
 find -maxdepth 1 . #only this directory
 
-mkdir -p dev/{data/seqs, script, analysis}
+
 touch path/absolute/xbc{A,B,C}_R{1,2}.fastq
 find path
 
@@ -1216,6 +1337,25 @@ ls -1 | sed 's/\.fastq\.gz//g' > ../PRJEB41550.txt
 
 bwa-mem2 and fastp \>[Bwa-mem2](https://github.com/bwa-mem2/bwa-mem2)
 
+
+
+```bash
+#sudo root - be extremely carefull, control + D to exit
+sudo su
+
+sudo apt-get update
+
+# answer yes
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
+sudo apt-get autoremove -y
+sudo apt-get autoclean -y
+
+
+sudo apt-get install unzip
+```
+
+
 ``` bash
 ## Samtools
 sudo apt-get upgrade
@@ -1227,6 +1367,12 @@ sudo apt-get install libcurl4-openssl-dev
 sudo apt-get install zlib1g-dev
 ```
 
+```bash
+#Steps: Install
+sudo ...
+
+export PATH=$PATH:/home/dev105/devapps/STAR/source
+```
 ## Installation
 
 ``` bash
@@ -1250,8 +1396,33 @@ export PATH="$PATH:/home/labatl/devapps"
 nano ~/.bashrc
 ## Source it
 source ~/.bashrc
+
+#Another option
+nano ~/.bashrc
+##Write at the end:
+export PATH=$PATH:”filepath”
 ```
 
+# SED
+
+Allows to filter/replace efficiently text in a pipeline
+
+`sed 's/hello/world/' input.txt > output.txt`
+`cat input.txt | sed 's/hello/world/' - > output.txt`
+
+- `-i`: overwrite the same file
+- `-n`: supress output and specify the line with `p`:`sed -n '45p' file.txt` o `sed -n  '1p ; $p' one.txt two.txt three.txt`
+- `-s`: reverse
+- `-e` or `-f`: specify non-option parameter:
+`sed --expression='s/hello/world/' input.txt > output.txt` or `sed --file=myscript.sed input.txt > output.txt`
+- `-z`: a set of lines
+
+```bash
+sed -n 1,2p Homo_sapiens.GRCh38.87_annotation.table
+```
+
+Manual[https://www.gnu.org/software/sed/manual/sed.html]
+(Extended REGEX)[http://austingroupbugs.net/view.php?id=528]
 ## Additional sources
 
 ## BASH tutorial - Notes
@@ -1262,7 +1433,7 @@ source ~/.bashrc
 -   https://github.com/Joseph7e/HCGS-BASH-tutorial
 -   https://github.com/ToniWestbrook/repeatfs
 -   https://geiselmed.dartmouth.edu/nhinbre/research-projects/faculty-admin/faculty/bioinformatics/bioinformatics-modules/
--   <https://github.com/raynamharris/Shell_Intro_for_Transcriptomics/blob/master/lessons/03_ReadWriteMoveCopy.mdwhoami,> pwd, cd, ls, ls -tlh(sort by time, show details, human readable format)
+-   <https://github.com/raynamharris/Shell_Intro_for_Transcriptomics/blob/master/lessons/03_ReadWriteMoveCopy.md
 -   [https://wikis.utexas.edu/display/bioiteam/Scott's+list+of+linux+one-liners](https://wikis.utexas.edu/display/bioiteam/Scott's+list+of+linux+one-liners)
 -   <https://people.duke.edu/~ccc14/duke-hts-2018/cliburn/Bash_in_Jupyter.html>
 -   <https://laderast.github.io/bash_for_bioinformatics/>
@@ -1288,3 +1459,63 @@ https://github.com/raynamharris/Shell_Intro_for_Transcriptomics/tree/master
 https://practicalcomputing.org/
 https://explainshell.com/
 https://data-skills.github.io/unix-and-bash/01-unix-git-intro/index.html 
+
+[https://wikis.utexas.edu/display/bioiteam/Scott's+list+of+linux+one-liners]
+[ <https://www.tutorialspoint.com/using-gzip-and-gunzip-in-linux> ]
+ https://www.thegeekstuff.com/2012/12/linux-tr-command/
+https://www.gnu.org/software/gawk/manual/html_node/Comparison-Operators.html
+
+https://genome.ucsc.edu/FAQ/FAQformat#format1
+
+https://gist.github.com/DannyArends/04d87f5590090dfe0dc6b42e5e1bbe15
+RNA Sequencing - Setup and Prerequisites
+https://www.youtube.com/watch?v=PlqDQBl22DI&t=14s
+
+https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE19080
+
+My index for genome star alignment
+https://labshare.cshl.edu/shares/gingeraslab/www-data/dobin/STAR/STARgenomes/Human/
+https://data.broadinstitute.org/Trinity/
+https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/
+
+
+https://ubuntu.com/tutorials/command-line-for-beginners#4-creating-folders-and-files
+
+<http://linuxcommand.org/tlcl.php>
+
+https://xie186.github.io/Novice2Expert4Bioinformatics/install-bioinformatics-software-in-linux.html
+https://hackr.io/blog/basic-linux-commands
+https://youtu.be/7-G_dQr7B44
+Install MUSCLE using binaries:
+https://youtu.be/UJx34KVLIgI
+Install PhyML using binaries:
+https://github.com/vappiah/bioinfoscr...
+Gene extractor script is available here
+https://itol.embl.de/
+iTOL browser
+https://youtu.be/2tMQYi_12IQ
+Python codes explained
+Installing muscle
+https://www.drive5.com/muscle/downloads.htm
+
+https://jlsteenwyk.com/ClipKIT/advanced/index.html
+https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3001007
+
+From <https://cyverse-leptin-rna-seq-lesson-dev.readthedocs-hosted.com/en/latest/section-3.html> 
+
+From <https://cyverse-leptin-rna-seq-lesson-dev.readthedocs-hosted.com/en/latest/section-3.html> 
+
+https://cyverse-leptin-rna-seq-lesson-dev.readthedocs-hosted.com/en/latest/section-3.html
+https://www.freecodecamp.org/espanol/news/grep-command-tutorial-how-to-search-for-a-file-in-linux-and-unix-with-recursive-find/
+https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html
+https://datacarpentry.org/wrangling-genomics/
+https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands
+https://sanbomics.com/2022/01/08/complete-rnaseq-alignment-guide-from-fastq-to-count-table/
+https://cyverse-leptin-rna-seq-lesson-dev.readthedocs-hosted.com/en/latest/section-8.html
+
+https://gist.github.com/darencard/e1933e544c9c96234e86d8cbccc709e0
+
+https://www.thegeekstuff.com/2010/03/awk-arrays-explained-with-5-practical-examples/
+https://notebook.community/crazyhottommy/scripts-general-use/Shell/Awk_anotates_vcf_with_bed
+
+(another blog)[https://biowize.wordpress.com/2015/03/26/the-fastest-darn-fastq-decoupling-procedure-i-ever-done-seen/]
