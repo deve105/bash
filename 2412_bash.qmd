@@ -36,7 +36,7 @@ highlight-style: atom-one
 
 **(simple) Shell \<\< Python (advanced)**
 
-### Steps for Linux installation:
+### Steps for Linux installation in Windows:
 
 -   Turn windows features on or off
 -   check windows subsystem for linux
@@ -44,7 +44,7 @@ highlight-style: atom-one
 ### Types:
 
 -   Bourne shell (sh) - old stuff
--   Korn shell (ksh) - old stuff x2
+-   Korn shell (ksh) - old stuff
 -   Bourn again shell (bash) - Linux
 
 
@@ -235,7 +235,8 @@ df -h
 
 ```
 ### Clusters
-```{bash}
+
+```{.bash}
 #For clusters
 myquota
 
@@ -363,6 +364,9 @@ du -ah file
 ```{.bash}
 # Copy
 cp filea.txt directory/filea.txt
+cp -r #recursive
+cp -i #prompt before overwriting
+cp -u #copy only if source is newer
 # Move
 mv filea.txt directory/filea.txt
 ```
@@ -577,7 +581,7 @@ history # historial
 # Example first all step by step
 ls ~ > file_list.txt
 wc -l file_list.txt
-rm file_list.txt
+rm file_list.txt #-f without prompt, -i with prompt, -r recursive
 
 # piping the data from one command to another
 ls ~ | wc -l
@@ -1749,10 +1753,13 @@ seq 5 2 9
 
 ## BASH tutorial - Notes
 
+(Crash course in Github by E. Peikon)[https://github.com/evanpeikon/bash_fundamentals]
+(Bash tutorial by Sevigny)[https://github.com/Joseph7e/HCGS-BASH-tutorial]
+
 ```{python}
 #| echo: false
 
--   https://github.com/Joseph7e/HCGS-BASH-tutorial
+
 -   https://github.com/ToniWestbrook/repeatfs
 -   https://geiselmed.dartmouth.edu/nhinbre/research-projects/faculty-admin/faculty/bioinformatics/bioinformatics-modules/
 -   <https://github.com/raynamharris/Shell_Intro_for_Transcriptomics/blob/master/lessons/03_ReadWriteMoveCopy.md
