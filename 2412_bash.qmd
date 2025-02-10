@@ -389,6 +389,10 @@ gunzip SRR*_1R2.fastq.gz
 
 # Decompress and keep the original
 gunzip -c file.gz > file
+
+# genomic data
+bzip2
+bunzip2
 ```
 ### Tar
 
@@ -540,7 +544,12 @@ zcat $DATA_DIR/$GTF | grep -v '^#' | awk '$3 == "gene"' | cut -f 9 > genes.txt
 
 
 ```
+### *sort*
 
+```{.bash}
+sort -k 2n -k 3r
+sort -u #unique
+```
 
 
 ### *find*
@@ -564,17 +573,17 @@ cut: Choose a column from a tab-delimited file (spreadsheet)
 
 ```{.bash}
 cut extracts columns separated by delimiters (-d)
-cut -d " " -f 2 file.txt #column 2 or 1,3,5 or 1-5
+cut -d " " -f 2 file.txt #column 2 or 1,3,5 or 1-5 or f2
 ```
 ### *uniq*
 
 Recognize two or more adjacent lines are the same.
 
-*   uniq -c para contar
+*   uniq -c to count
 *   uniq -w N solo usa los xxx caracteres iniciales para evaluar si son iguales
 
 ```bash
-sort haiku.txt | uniq -c 
+sort haiku.txt | uniq -c  
 
 history # historial
 
@@ -588,8 +597,13 @@ ls ~ | wc -l
 
 ```
 
+### *diff* and *comm*
 
+comm will output three columns: the third is the one in common (necessary to previously sort)
 
+```{bash}
+comm -1 -2 #Only common
+```
 
 ### Piping
 
