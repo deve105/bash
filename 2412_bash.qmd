@@ -390,7 +390,7 @@ gunzip SRR*_1R2.fastq.gz
 # Decompress and keep the original
 gunzip -c file.gz > file
 
-# genomic data
+# genomic data one file at the time
 bzip2
 bunzip2
 ```
@@ -1754,6 +1754,28 @@ cat file.txt | awk -F '\t' '$1=="2"' {print $3} | sort | uniq -c
 cat docs/echo.txt | awk 'BEGIN {FS = ","} ; $5 == "M"' > docs/male.txt
 
 
+```
+
+# Q/A
+
+
+```{.bash}
+# How many chromosomes? 
+grep -c ">" apple.genome  
+
+# How many genes?
+cut -f1 apple.genes | sort -u | wc -l 
+cut -f1 apple.genes | uniq | wc -l 
+
+
+# How many genes?
+cut -f2 apple.genes | sort -u | wc -l 
+
+# Genes with multiple variants
+cut -f1 apple.genes | uniq -c | grep -v " 1 "
+
+
+cat apple.cond{A,B,C}.sorted.genes | sort | uniq –c | grep –c “ 3 “
 ```
 ## Additional sources
 
