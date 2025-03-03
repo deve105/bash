@@ -1,0 +1,123 @@
+# sed 
+command-line text editor (part of GNU Project): filter or edit multiple files simultaneously.
+
+## MAC - Installation 
+```{.bash}
+brew install gnu-sed
+brew info gnu-sed
+# modify /.bashrc #to use sed rather than gsed
+# export PATH=/usr/local/opt/gnu-sed/libexec/gnubin:$PATH
+which sed
+```
+## 1. Syntax
+
+`sed [options] {commands} {input_file}`
+```{.bash}
+sed 's/dev/Daniel/g' file.txt
+
+sed -n 'p' file.txt #print out the content line by line, only one time. ',' limits, + and ~ (series)
+sed -n '5p' file.txt #print an specific line
+sed -n '1,3p' file.txt #print line 1 to 3
+sed -n '2,$ p' file.txt #line 2 to the end
+sed -n '2,+2 p' file.txt #line 2 plus 2 more
+sed -n '1~2 p' file.txt #every other line
+
+sed -n '2~4p' htlv.fastq #print only sequences
+```
+
+## 2. Patterns
+
+```{.bash}
+sed -n '/chr6/ p' htlv.bed # lines containing the Pattern
+sed -n '/chr6/, 4p' htlv.bed #print 1:4
+sed -n '/chr6/, /chr7/ p' htlv.bed
+sed -n '/chr6/, +2 p' htlv.bed
+```
+
+## 3. Delete lines
+
+```{.bash}
+sed '2 d' test.bed #delete the second Line
+sed '2,4 d' test.bed # delete 2nd to 4th
+sed '1~2 d' test.bed
+sed '/chr1/ d' test.bed
+sed '/chr1/, 4 d' test.bed #delete lines matching chr1 to line 4th
+sed '/chr1/, /chr2/ d' test.bed
+
+sed '/^$/ d' file.txt #DELETE ALL BLANK LINES, ^start $end
+sed '/^#/ d'
+```
+
+## 4. Substitute (the first ocurrence, g:global)
+
+```{.bash}
+sed 's/dev/DEV' test.txt
+sed '/300/s/dev/DEV' test.txt
+sed 's/^chr//' test.txt
+sed 's/^/chr/' test.txt
+
+# global
+sed 's/dev/DEV/g' test.txt
+sed -n 's/dev/DEV/pg' test.txt
+
+# i ignore lower/upper
+sed -n 's/chR/cc/pgi' test.txt
+
+# others delimiters
+sed -n 's@chR@cc@pgi' test.txt
+
+# [&]
+sed 's/^chr[0-9]/[&]/' test.txt
+
+```
+
+## 5. regex
+
+`.` any character except the end of line
+`*` zero or more
+`+` one or more ocurrences of the last character `2+` or ` +`
+`?` zero or one ocurrence
+`[0-9],[A-Z],[A-Za-z]` list of characters
+`\|` OR 
+`\{m\}` m ocurrences
+`{m,n}` between m,n ocurrences <255
+`(\1)` back references
+
+```{.bash}
+sed 's/1\|2/replacing/g' text.txt
+sed 's/GGG\{1,2\}/match/g' fasta.fa
+sed 's/\(^chr[0-9]\)\(.\+\)/\2\t\1/' test.bed #re-arrange by groups ()
+```
+
+## 6. change in place
+
+```{.bash}
+sed -i 's/0*//g' text.txt
+```
+## 7. append
+`sed '[address] the-line-to-append' {input}`
+
+```{.bash}
+sed '5 a chr10\t1\t5' text.txt
+sed 'chr1 a chr10\t1\t5' text.txt
+sed '5 i chr10\t1\t5' text.txt #before the match
+sed -n l test.bed #print hidden characters
+sed = test.bed # print line number
+sed -n '/chr2/ =' test.bed
+sed -n '$ =' test.bed # wc -l
+cat -n test.bed
+nl test.bed
+```
+
+## 8. quit until it finds the first match
+
+```{.bash}
+sed '/chr2/ q' test.bed
+```
+
+# 9. transforming characters by position 
+
+```{.bash}
+sed 'y/crh/CRH' test.bed
+sed -i 'y/[a-z]/[A-Z]/' input.txt
+```
