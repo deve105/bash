@@ -1,0 +1,159 @@
+#Introduction to Bioinformatics
+
+
+
+## The Protein Contest
+* 1955: Sanger sequenced bovine insulin
+* 1970: Needleman-Wunsch algorithm (for alignment)
+* 1990: BLAST
+
+Protein cristallography vs computational prediction
+* 2012: CASP9 HHped Rosetta
+* 2020: AlphaFold2 (AI) almost 90% global distance test
+
+## The Gene Contest
+* 1977: Northern blot
+* 1995: Microarray
+* 2020: Luminex assay RASL-seq (Profile expression of ~1k genes)
+* 2020: scRNA-seq
+
+## The Genome Contest
+* 1953 DNA structure
+* 1972 Recombinant DNA
+* 1977 Sanger
+* 1985 PCR
+* 1988 NCBI
+* 1990 BLAST
+* 1990-2003: Human Genome Project
+
+*** deep neural networks
+
+## Bioinfomatics vs computational biology
+* bioinformatics - build useful tools
+* computational biology - biology using computational techniques.
+level 0: modeling
+level 1: entry - published tools to analyze
+level 2: bioinfo - algorithms, databases
+level 3: compbio - biological discovery from public data
+level x: integrative studies
+
+
+## Bioinformatics
+
+Computer science -> biological questions
+
+Algorithm -> A protocol
+- sequence alignment in fasta/fastq (quality: PHRED score)
+
+
+*In silico* -> Tested on a computer
+
+2010: The ENCODE project
+Encyclopedia of DNA Elements (Human Genome Project follow-up)
+
+The GenBank sequence database
+- Ensembl - Annotation is essential (Location, gene name, structure, function, related sequences, classification)
+
+## Example: microarrays
+
+- Measure expression level of +20k genes in a single experiment.
+- 1-color vs 2-color (case-control) (fluorescent dyes Cy3 +/- Cy5)
+Green - High expression sample 1
+Red - High expression sample 2
+Yellow - Equal 
+Black - No signal
+
+Workflow
+- Create oligo-arrays
+- Acquire samples
+- Extract and label the DNA
+- Hybridization and scanning
+- Data storage
+- Data normalization: Normalize based on differences in RNA abundance, range scanner, external conditions.
+- Gene expression clustering
+- Data interpretation
+
+~25.000 genes in humans average 10k-15k bp long
+-each probe targets 20-40 bp
+
+Genes - Rows
+Samples - Columns
+
+
+Visualize only the most differentially expressed genes.
+Algorithm to create groups/clusters.
+
+## Clustering
+Partition
+clustering (hierarchical, fuzzy, density-based, model-based)
+
+## Data interpretation
+
+Gene ontology: computational model of biological systems
+
+## Programming
+
+Github for version control.
+git-scm.com/downloads
+
+generate a new SSH key
+
+open git bash
+ssh-keygen -t ed25519 -C "your@email.com"
+Private key (for commits)
+Public key (.pub)
+
+add your public key to settings
+
+Settings > SSH and GPG keys
+ssh -T git@github.com
+git clone ...
+git status
+git add README.md
+git commit -m "Updated the readme"
+git push
+git config --global user.email ""
+git config --global user.name ""
+
+Notepad++
+
+## Phenotypes or traits
+Qualitative and quantitative properties.
+Every quantitative trait can become qualitative.
+Mendelian - 1 locus
+Complex >=2 loci
+
+- 7 fundamental units
+- Length (m)
+- Mass (kg)
+- Time (s)
+- Electric current (A)
+- Thermodynamic temp (K)
+- Amount of substance (mole)
+- Luminous intensity (candela)
+
+Dry earwax first appeared in Asia and is thus more common among Asian and Native American populations. Wet earwax is common among most other populations.
+
+Additive vs dominant phenotype
+
+co-ocurrence - unit of linkage (centi)Morgan
+
+with x-linked genes
+males are hemizygous recessive 
+
+- Two-point cross: distance between the two genes, etc: three-point cross - order 
+QTL mapping
+- inbred population to study complex traits
+
+GWAS
+-natural population to study complex traits
+
+* Databases
+OMIM
+IMPC (Mouse)
+Gen2Phen
+
+
+https://github.com/clairemerot/physalia_adaptation_course
+https://github.com/harrisonlab/popgen
+https://www.york.ac.uk/res/dasmahapatra/teaching/MBiol_sequence_analysis/workshop4_2019.html

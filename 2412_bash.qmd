@@ -97,6 +97,16 @@ Tree file system: path starts with a forward slash `/`
 
 ![Linux Hierarchical structure](/images/03_structure.png)
 
+Keys:
+- space (forward)
+- b (backwards)
+- g (beginning)
+- G (end)
+- q (quit)
+- `Control + C` kill
+- `Control + R` reverse search
+
+
 ## C. Command Syntax
 
 `command [options] [file or arguments]`
@@ -115,7 +125,7 @@ Tree file system: path starts with a forward slash `/`
 
 ```bash
 # ls [option] [file]
-ls -a #hidden
+ls -a #hidden, -F, -R nested directories
 ls -t #time, -d details, -h size
 ls -l -a #characteristics
 ls -tlh
@@ -130,7 +140,8 @@ tree -a
 ```
 
 ### Practice
-
+`Control+L` to clean the screen
+`git clone $website`
 ``` bash
 # Try the following
 date
@@ -1896,3 +1907,6 @@ Onedrive
 wget -qO - https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/obs-onedrive.gpg > /dev/null
 
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/obs-onedrive.gpg] https://download.opensuse.org/repositories/home:/npreining:/debian-ubuntu-onedrive/xUbuntu_22.04/./" | sudo tee /etc/apt/sources.list.d/onedrive.list
+
+https://owensgl.github.io/intro-genomics/labs/lab_2/
+https://liulab-dfci.github.io/bioinfo-combio/intro.html
